@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="pl" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{base.html :: head}"></head>
+
+<body th:replace="~{base.html :: layout(~{::content})}">
+    <div th:fragment="content">
+        <div style="margin-bottom: 2rem;">
+            <a href="/public/profiles"
+                style="text-decoration: none; color: var(--accent-color); font-size: 0.9rem;">&larr; Powrót do listy</a>
+            <h1 th:text="'Profil: ' + ${profileUser.username}">Profil</h1>
+        </div>
+
+        <div class="card">
+            <h3
+                th:text="${profileUser.firstName != null ? profileUser.firstName + ' ' + (profileUser.lastName != null ? profileUser.lastName : '') : profileUser.username}">
+                Imię Nazwisko</h3>
+
+            <div th:if="${profileUser.motivationalQuote != null and profileUser.motivationalQuote != ''}"
+                style="margin: 1.5rem 0; padding: 1rem; background: #fafafa; border-left: 4px solid var(--accent-color); font-style: italic;">
+                <p th:text="${'&quot;' + profileUser.motivationalQuote + '&quot;'}"></p>
+            </div>
+
+            <div th:if="${profileUser.achievement != null and profileUser.achievement != ''}" style="margin: 1.5rem 0;">
+                <strong style="font-size: 0.8rem; text-transform: uppercase; color: var(--accent-color);">Historia i
+                    Cele:</strong>
+                <p style="margin-top: 0.5rem;" th:text="${profileUser.achievement}"></p>
+            </div>
+
+            <div class="pure-g" style="border-top: 1px solid #eee; padding-top: 1rem;">
+                <div class="pure-u-1-2">
+                    <span style="font-size: 0.8rem; color: var(--secondary-color);">Wzrost:</span>
+                    <p style="font-weight: 600;"
+                        th:text="${profileUser.height != null ? profileUser.height + ' cm' : '-'}"></p>
+                </div>
+                <div class="pure-u-1-2">
+                    <span style="font-size: 0.8rem; color: var(--secondary-color);">Aktualna waga:</span>
+                    <p id="stat-weight" style="font-weight: 600;"
+                        th:text="${stats != null and stats.currentWeight != null ? stats.currentWeight + ' kg' : '-'}">
+                    </p>
+                </div>
+            </div>
+            <div style="margin-top: 1rem; border-top: 1px solid #eee; padding-top: 1rem;">
+                <span style="font-size: 0.8rem; color: var(--secondary-color);">Aktualne BMI:</span>
+                <p style="font-weight: 600;">
+                    <span id="stat-bmi"
+                        th:text="${stats != null and stats.currentBMI != null ? #numbers.formatDecimal(stats.currentBMI, 1, 'POINT', 1, 'POINT') : '-'}"></span>
+                    - <span id="stat-category" th:text="${stats != null ? stats.category : ''}"></span>
+                </p>
+            </div>
+        </div>
+
+        <div class="card">
+            <h3>Postęp wagi</h3>
+            <div style="height: 300px; position: relative;">
+                <canvas id="publicWeightChart"></canvas>
+            </div>
+        </div>
+
+        <div class="card" th:if="${weightHistory != null and !weightHistory.empty}">
+            <h3>Historia pomiarów</h3>
+            <div class="table-container">
+                <table class="pure-table pure-table-horizontal" style="width: 100%; border: none;">
+                    <thead>
+                        <tr>
+                            <th style="color: var(--secondary-color); font-weight: 500;">Data</th>
+                            <th style="color: var(--secondary-color); font-weight: 500;">Waga</th>
+                            <th style="color: var(--secondary-color); font-weight: 500;">BMI</th>
+                        </tr>
+                    </thead>
+                    <tbody id="public-history-body">
+                        <tr th:each="record : ${weightHistory}" th:data-record-id="${record.id}">
+                            <td
+                                th:text="${record.recordDate != null ? #temporals.format(record.recordDate, 'dd.MM.yyyy') : '-'}">
+                            </td>
+                            <td th:text="${record.weight} + ' kg'"></td>
+                            <td
+                                th:text="${record.calculateBMI() != null ? #numbers.formatDecimal(record.calculateBMI(), 1, 'POINT', 1, 'POINT') : '-'}">
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="pagination-container">
+                    <div style="font-size: 0.9rem; color: var(--secondary-color);">
+                        Pomiary <span th:text="${currentPage * pageSize + 1}"></span> -
+                        <span
+                            th:text="${(currentPage + 1) * pageSize > totalItems ? totalItems : (currentPage + 1) * pageSize}"></span>
+                        z <span th:text="${totalItems}"></span>
+                    </div>
+
+                    <div class="pagination" th:if="${totalPages > 1}">
+                        <a th:href="@{/public/profile/{id}(id=${profileUser.id}, page=${currentPage - 1}, size=${pageSize})}"
+                            class="pure-button" th:classappend="${currentPage == 0} ? 'pure-button-disabled'"
+                            style="padding: 0.2rem 0.5rem; font-size: 0.8rem;">Poprzednia</a>
+
+                        <span style="margin: 0 1rem; font-size: 0.9rem;">
+                            Strona <span th:text="${currentPage + 1}"></span> z <span th:text="${totalPages}"></span>
+                        </span>
+
+                        <a th:href="@{/public/profile/{id}(id=${profileUser.id}, page=${currentPage + 1}, size=${pageSize})}"
+                            class="pure-button"
+                            th:classappend="${currentPage + 1 >= totalPages} ? 'pure-button-disabled'"
+                            style="padding: 0.2rem 0.5rem; font-size: 0.8rem;">Następna</a>
+                    </div>
+
+                    <div>
+                        <form th:action="@{/public/profile/{id}(id=${profileUser.id})}" method="get"
+                            style="display: inline-flex; align-items: center; justify-content: center;">
+                            <label style="font-size: 0.8rem; margin-right: 0.5rem; color: var(--secondary-color);">Na
+                                stronę:</label>
+                            <select name="size" onchange="this.form.submit()"
+                                style="padding: 0.2rem; border-radius: 4px; border: 1px solid #ddd; font-size: 0.8rem; width: auto; margin-bottom: 0;">
+                                <option th:value="25" th:selected="${pageSize == 25}">25</option>
+                                <option th:value="50" th:selected="${pageSize == 50}">50</option>
+                                <option th:value="75" th:selected="${pageSize == 75}">75</option>
+                                <option th:value="100" th:selected="${pageSize == 100}">100</option>
+                            </select>
+                            <input type="hidden" name="page" th:value="0">
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script th:inline="javascript">
+            const chartLabels = /*[[${chartLabels}]]*/[];
+            const chartData = /*[[${chartData}]]*/[];
+            /*]]>*/
+
+            let weightChart = null;
+
+            function initChart() {
+                const ctx = document.getElementById('publicWeightChart').getContext('2d');
+                const data = {
+                    labels: [],
+                    datasets: [{
+                        label: 'Waga (kg)',
+                        data: [],
+                        borderColor: '#0984e3',
+                        backgroundColor: 'rgba(9, 132, 227, 0.1)',
+                        tension: 0.3,
+                        fill: true
+                    }]
+                };
+
+                if (chartLabels && chartData) {
+                    data.labels = chartLabels;
+                    data.datasets[0].data = chartData;
+                }
+
+                weightChart = new Chart(ctx, {
+                    type: 'line',
+                    data: data,
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: { beginAtZero: false }
+                        },
+                        plugins: {
+                            legend: { display: false }
+                        }
+                    }
+                });
+            }
+
+            window.onload = function () {
+                initChart();
+            };
+        </script>
+    </div>
+</body>
+
+</html>

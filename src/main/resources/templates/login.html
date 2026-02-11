@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="pl" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{base.html :: head}"></head>
+
+<body th:replace="~{base.html :: layout(~{::content})}">
+    <div th:fragment="content">
+        <div class="card" style="max-width: 400px; margin: 2rem auto;">
+            <h2>Zaloguj się</h2>
+            <div th:if="${param.error}" class="pure-alert pure-alert-error"
+                style="color: #d63031; margin-bottom: 1rem; font-size: 0.9rem;">
+                Nieprawidłowy login lub hasło.
+            </div>
+            <form th:action="@{/login}" method="post" class="pure-form pure-form-stacked">
+                <label for="username">Użytkownik</label>
+                <input type="text" id="username" name="username" required autofocus>
+
+                <label for="password">Hasło</label>
+                <input type="password" id="password" name="password" required>
+
+                <button type="submit" class="pure-button pure-button-primary"
+                    style="width: 100%; margin-top: 1rem;">Zaloguj</button>
+            </form>
+            <p style="text-align: center; margin-top: 1.5rem; font-size: 0.9rem; color: var(--secondary-color);">
+                Nie masz konta? <a href="/register"
+                    style="color: var(--accent-color); text-decoration: none;">Zarejestruj się</a>
+            </p>
+        </div>
+    </div>
+</body>
+
+</html>

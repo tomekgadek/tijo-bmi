@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="pl" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{base.html :: head}"></head>
+
+<body th:replace="~{base.html :: layout(~{::content})}">
+    <div th:fragment="content">
+        <div style="margin-bottom: 2rem;">
+            <h1>Społeczność</h1>
+            <p style="color: var(--secondary-color);">Przeglądaj profile innych użytkowników i czerp inspirację.</p>
+        </div>
+
+        <div th:if="${profiles != null and !profiles.empty}" class="pure-g">
+            <div th:each="dto : ${profiles}" class="pure-u-1 pure-u-md-1-2" style="padding: 0.5rem;">
+                <div class="card" style="height: 100%; display: flex; flex-direction: column;">
+                    <h3
+                        th:text="${dto.user.firstName != null ? dto.user.firstName + ' ' + (dto.user.lastName != null ? dto.user.lastName : '') : dto.user.username}">
+                        Imię Nazwisko</h3>
+
+                    <div style="flex: 1;">
+                        <p th:if="${dto.user.motivationalQuote != null and dto.user.motivationalQuote != ''}"
+                            style="font-style: italic; font-size: 0.9rem; color: var(--secondary-color); margin-bottom: 1rem;">
+                            <span th:text="${'&quot;' + dto.user.motivationalQuote + '&quot;'}"></span>
+                        </p>
+
+                        <div th:if="${dto.user.achievement != null and dto.user.achievement != ''}"
+                            style="margin-bottom: 1rem;">
+                            <strong
+                                style="font-size: 0.8rem; text-transform: uppercase; color: var(--accent-color);">Osiągnięcia:</strong>
+                            <p style="font-size: 0.9rem; margin-top: 0.2rem;" th:text="${dto.user.achievement}"></p>
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 1rem; border-top: 1px solid #eee; padding-top: 1rem;">
+                        <div class="pure-g" style="text-align: center; margin-bottom: 1rem;">
+                            <div class="pure-u-1-3">
+                                <span
+                                    style="font-size: 0.7rem; color: var(--secondary-color); text-transform: uppercase;">Wzrost</span>
+                                <div style="font-weight: 600; font-size: 0.9rem;"
+                                    th:text="${dto.user.height != null ? dto.user.height + ' cm' : '-'}"></div>
+                            </div>
+                            <div class="pure-u-1-3">
+                                <span
+                                    style="font-size: 0.7rem; color: var(--secondary-color); text-transform: uppercase;">Waga</span>
+                                <div style="font-weight: 600; font-size: 0.9rem;"
+                                    th:text="${dto.currentWeight != null ? dto.currentWeight + ' kg' : '-'}"></div>
+                            </div>
+                            <div class="pure-u-1-3">
+                                <span
+                                    style="font-size: 0.7rem; color: var(--secondary-color); text-transform: uppercase;">BMI</span>
+                                <div style="font-weight: 600; font-size: 0.9rem; color: var(--accent-color);"
+                                    th:text="${dto.currentBMI != null ? #numbers.formatDecimal(dto.currentBMI, 1, 1) : '-'}">
+                                </div>
+                            </div>
+                        </div>
+                        <div style="text-align: center;">
+                            <a th:href="@{/public/profile/{id}(id=${dto.user.id})}" class="pure-button"
+                                style="font-size: 0.8rem; width: 100%;">Zobacz pełny profil</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div th:if="${profiles == null or profiles.empty}" class="card" style="text-align: center; padding: 3rem;">
+            <p style="color: var(--secondary-color);">Brak publicznych profili.</p>
+        </div>
+    </div>
+</body>
+
+</html>

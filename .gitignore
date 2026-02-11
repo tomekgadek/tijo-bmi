@@ -1,0 +1,28 @@
+# IDEs
+
+.idea/
+.vscode/
+.DS_Store
+
+# Maven
+
+target/
+
+# Java
+
+*.class
+*.jar
+*.war
+*.ear
+*.iml
+
+# Databases
+
+*.db
+*.sqlite
+*.h2.db
+
+# Node.js
+
+node_modules/
+npm-debug.log

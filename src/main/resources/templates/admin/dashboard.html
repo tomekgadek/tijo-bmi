@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="pl" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="base.html :: head"></head>
+
+<body th:replace="base.html :: layout(~{::content})">
+    <div th:fragment="content">
+        <div style="margin-bottom: 2rem;">
+            <h1>Panel Admina</h1>
+            <p style="color: var(--secondary-color);">Przegląd użytkowników i statystyki systemu.</p>
+        </div>
+
+        <!-- Stats Grid -->
+        <div class="pure-g" style="margin-bottom: 2rem;">
+            <div class="pure-u-1 pure-u-md-1-3" style="padding: 0.5rem;">
+                <div class="card" style="text-align: center; margin-bottom: 0;">
+                    <span
+                        style="font-size: 0.7rem; color: var(--secondary-color); text-transform: uppercase;">Użytkownicy</span>
+                    <div style="font-size: 2rem; font-weight: 600;" th:text="${users.size()}">0</div>
+                </div>
+            </div>
+            <div class="pure-u-1 pure-u-md-1-3" style="padding: 0.5rem;">
+                <div class="card" style="text-align: center; margin-bottom: 0;">
+                    <span
+                        style="font-size: 0.7rem; color: var(--secondary-color); text-transform: uppercase;">Publiczne</span>
+                    <div style="font-size: 2rem; font-weight: 600; color: #2ecc71;" th:text="${publicCount}">0</div>
+                </div>
+            </div>
+            <div class="pure-u-1 pure-u-md-1-3" style="padding: 0.5rem;">
+                <div class="card" style="text-align: center; margin-bottom: 0;">
+                    <span
+                        style="font-size: 0.7rem; color: var(--secondary-color); text-transform: uppercase;">Prywatne</span>
+                    <div style="font-size: 2rem; font-weight: 600; color: #e74c3c;" th:text="${privateCount}">0</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Users Table -->
+        <div class="card">
+            <h3>Lista użytkowników</h3>
+            <div style="overflow-x: auto;">
+                <table class="pure-table pure-table-horizontal" style="width: 100%; font-size: 0.9rem;">
+                    <thead>
+                        <tr>
+                            <th>Użytkownik</th>
+                            <th>Status</th>
+                            <th>Data</th>
+                            <th>Akcje</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="user : ${users}">
+                            <td>
+                                <div style="font-weight: 600;" th:text="${user.username}"></div>
+                                <div style="font-size: 0.7rem; color: var(--secondary-color);"
+                                    th:text="${user.firstName != null ? user.firstName + ' ' + (user.lastName != null ? user.lastName : '') : '-'}">
+                                </div>
+                            </td>
+                            <td>
+                                <span th:text="${user.isPublic ? 'Public' : 'Private'}"
+                                    th:style="'font-size: 0.7rem; padding: 2px 6px; border-radius: 4px; color: white; background-color: ' + (${user.isPublic} ? '#2ecc71' : '#e74c3c')"></span>
+                            </td>
+                            <td th:text="${user.createdAt != null ? #temporals.format(user.createdAt, 'dd.MM') : '-'}">
+                            </td>
+                            <td>
+                                <a th:href="@{/admin/user/{id}(id=${user.id})}" class="pure-button"
+                                    style="font-size: 0.7rem;">Szczegóły</a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="card">
+            <h3>Rozkład BMI</h3>
+            <div style="height: 300px; position: relative;">
+                <canvas id="adminBmiChart"></canvas>
+            </div>
+        </div>
+
+        <script th:inline="javascript">
+            /*<![CDATA[*/
+            const usernames = /*[[${usernames}]]*/[];
+            const currentBMIs = /*[[${currentBMIs}]]*/[];
+            /*]]>*/
+
+            window.onload = function () {
+                const ctx = document.getElementById('adminBmiChart').getContext('2d');
+                new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: usernames,
+                        datasets: [{
+                            label: 'BMI',
+                            data: currentBMIs,
+                            backgroundColor: 'rgba(9, 132, 227, 0.5)',
+                            borderColor: '#0984e3',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: { beginAtZero: true }
+                        },
+                        plugins: {
+                            legend: { display: false }
+                        }
+                    }
+                });
+            };
+        </script>
+    </div>
+</body>
+
+</html>

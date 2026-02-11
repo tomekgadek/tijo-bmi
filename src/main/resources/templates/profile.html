@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="pl" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{base.html :: head}"></head>
+
+<body th:replace="~{base.html :: layout(~{::content})}">
+    <div th:fragment="content">
+        <!-- Profile Completion Alert -->
+        <div th:if="${user.height == null or user.firstName == null}" class="card"
+            style="border-left: 4px solid #f1c40f;">
+            <h3>Uzupełnij swój profil</h3>
+            <p style="font-size: 0.9rem; color: var(--secondary-color);">Dodaj swój wzrost i imię, abyśmy mogli obliczyć
+                Twoje BMI.</p>
+            <button class="pure-button"
+                onclick="document.getElementById('profile-edit').scrollIntoView({behavior: 'smooth'})">Uzupełnij
+                teraz</button>
+        </div>
+
+        <!-- Quick Stats Header -->
+        <div class="pure-g">
+            <div class="pure-u-1 pure-u-md-1-2">
+                <h1 th:text="'Profil: ' + ${user.username}">Cześć</h1>
+            </div>
+            <div class="pure-u-1 pure-u-md-1-2" style="text-align: right;">
+                <p style="font-size: 0.8rem; color: var(--secondary-color);">Status profilu: <span
+                        th:text="${user.isPublic ? 'Publiczny' : 'Prywatny'}" style="font-weight: 600;"></span></p>
+            </div>
+        </div>
+
+        <div class="pure-g" style="margin-bottom: 2rem;">
+            <div class="pure-u-1-2 pure-u-md-1-4" style="padding-right: 0.5rem;">
+                <div class="card" style="text-align: center; padding: 1rem;">
+                    <span
+                        style="font-size: 0.7rem; color: var(--secondary-color); text-transform: uppercase;">BMI</span>
+                    <div id="stat-bmi" style="font-size: 1.5rem; font-weight: 600;"
+                        th:text="${stats != null and stats.currentBMI != null ? #numbers.formatDecimal(stats.currentBMI, 1, 'POINT', 1, 'POINT') : '-'}">
+                        -</div>
+                    <span id="stat-category" style="font-size: 0.7rem; color: var(--accent-color);"
+                        th:text="${stats != null ? stats.category : ''}"></span>
+                </div>
+            </div>
+            <div class="pure-u-1-2 pure-u-md-1-4" style="padding-left: 0.5rem; padding-right: 0.5rem;">
+                <div class="card" style="text-align: center; padding: 1rem;">
+                    <span
+                        style="font-size: 0.7rem; color: var(--secondary-color); text-transform: uppercase;">Waga</span>
+                    <div id="stat-weight" style="font-size: 1.5rem; font-weight: 600;"
+                        th:text="${weightHistory != null and !weightHistory.empty ? weightHistory[0].weight : '-'}">-
+                    </div>
+                    <span style="font-size: 0.7rem; color: var(--secondary-color);">kg</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Add Weight & Chart -->
+        <div class="card">
+            <h3>Dodaj nową wagę</h3>
+            <form id="weight-form" th:action="@{/profile/addWeight}" method="post" class="pure-form"
+                style="display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: flex-end;">
+                <div style="flex: 1; min-width: 120px;">
+                    <label style="font-size: 0.7rem; color: var(--secondary-color);">Waga (kg)</label>
+                    <input type="number" name="weight" id="new-weight" step="0.1" placeholder="np. 75.5" required
+                        style="margin-bottom: 0;">
+                </div>
+                <div style="flex: 1; min-width: 150px;">
+                    <label style="font-size: 0.7rem; color: var(--secondary-color);">Data</label>
+                    <input type="date" name="recordDate" id="new-date"
+                        th:value="${#temporals.format(#temporals.createNow(), 'yyyy-MM-dd')}" required
+                        style="margin-bottom: 0;">
+                </div>
+                <button type="submit" class="pure-button pure-button-primary">Dodaj wpis</button>
+            </form>
+        </div>
+
+        <div class="card">
+            <h3>Postęp</h3>
+            <div style="height: 300px; position: relative;">
+                <canvas id="weightChart"></canvas>
+            </div>
+        </div>
+
+        <div th:if="${user.motivationalQuote != null and user.motivationalQuote != ''}" class="card"
+            style="background-color: #fafafa; font-style: italic; border-left: 4px solid var(--accent-color);">
+            <p th:text="${'&quot;' + user.motivationalQuote + '&quot;'}"></p>
+        </div>
+
+        <!-- History (Collapsible) -->
+        <details class="card" style="padding: 0;">
+            <summary style="padding: 1rem; cursor: pointer; font-weight: 600;">Historia pomiarów</summary>
+            <div style="padding: 1rem; border-top: 1px solid #eee;">
+                <table class="pure-table pure-table-horizontal" style="width: 100%; font-size: 0.9rem;">
+                    <thead>
+                        <tr>
+                            <th>Data</th>
+                            <th>Waga</th>
+                            <th>BMI</th>
+                            <th style="text-align: right;">Akcje</th>
+                        </tr>
+                    </thead>
+                    <tbody id="history-body">
+                        <tr th:each="record : ${weightHistory}" th:data-record-id="${record.id}">
+                            <td
+                                th:text="${record.recordDate != null ? #temporals.format(record.recordDate, 'dd.MM.yyyy') : '-'}">
+                            </td>
+                            <td th:text="${record.weight} + ' kg'"></td>
+                            <td
+                                th:text="${record.calculateBMI() != null ? #numbers.formatDecimal(record.calculateBMI(), 1, 'POINT', 1, 'POINT') : '-'}">
+                            </td>
+                            <td style="text-align: right; white-space: nowrap;">
+                                <button type="button" class="pure-button" th:data-weight="${record.weight}"
+                                    th:data-date="${#temporals.format(record.recordDate, 'yyyy-MM-dd')}"
+                                    onclick="loadRecordForEdit(this)"
+                                    style="padding: 0.2rem 0.5rem; font-size: 0.7rem; background-color: #eee; color: var(--secondary-color); border: none; margin-right: 0.2rem;">Edytuj</button>
+
+                                <form th:action="@{/profile/delete-weight/{id}(id=${record.id})}" method="post"
+                                    style="display: inline;"
+                                    onsubmit="return confirm('Czy na pewno chcesz usunąć ten wpis?')">
+                                    <button type="submit" class="pure-button"
+                                        style="padding: 0.2rem 0.5rem; font-size: 0.7rem; background-color: #fab1a0; color: #d63031; border: none;">Usuń</button>
+                                </form>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <!-- Pagination Controls -->
+                <div class="pagination-container">
+                    <div style="font-size: 0.9rem; color: var(--secondary-color);">
+                        Pomiary <span th:text="${currentPage * pageSize + 1}"></span> -
+                        <span
+                            th:text="${(currentPage + 1) * pageSize > totalItems ? totalItems : (currentPage + 1) * pageSize}"></span>
+                        z <span th:text="${totalItems}"></span>
+                    </div>
+
+                    <div class="pagination" th:if="${totalPages > 1}">
+                        <a th:href="@{/profile(page=${currentPage - 1}, size=${pageSize})}" class="pure-button"
+                            th:classappend="${currentPage == 0} ? 'pure-button-disabled'"
+                            style="padding: 0.2rem 0.5rem; font-size: 0.8rem;">Poprzednia</a>
+
+                        <span style="margin: 0 1rem; font-size: 0.9rem;">
+                            Strona <span th:text="${currentPage + 1}"></span> z <span th:text="${totalPages}"></span>
+                        </span>
+
+                        <a th:href="@{/profile(page=${currentPage + 1}, size=${pageSize})}" class="pure-button"
+                            th:classappend="${currentPage + 1 >= totalPages} ? 'pure-button-disabled'"
+                            style="padding: 0.2rem 0.5rem; font-size: 0.8rem;">Następna</a>
+                    </div>
+
+                    <div>
+                        <form th:action="@{/profile/update-pagination}" method="post"
+                            style="display: inline-flex; align-items: center; justify-content: center;">
+                            <label style="font-size: 0.8rem; margin-right: 0.5rem; color: var(--secondary-color);">Na
+                                stronę:</label>
+                            <select name="size" onchange="this.form.submit()"
+                                style="padding: 0.2rem; border-radius: 4px; border: 1px solid #ddd; font-size: 0.8rem; width: auto; margin-bottom: 0;">
+                                <option th:value="25" th:selected="${pageSize == 25}">25</option>
+                                <option th:value="50" th:selected="${pageSize == 50}">50</option>
+                                <option th:value="75" th:selected="${pageSize == 75}">75</option>
+                                <option th:value="100" th:selected="${pageSize == 100}">100</option>
+                            </select>
+                        </form>
+                    </div>
+                </div>
+        </details>
+
+        <script>
+            function loadRecordForEdit(btn) {
+                const weight = btn.getAttribute('data-weight');
+                const date = btn.getAttribute('data-date');
+                document.getElementById('new-weight').value = weight;
+                document.getElementById('new-date').value = date;
+                document.getElementById('weight-form').scrollIntoView({ behavior: 'smooth' });
+            }
+        </script>
+
+        <!-- Settings / Profile Edit -->
+        <div id="profile-edit" class="card" style="margin-top: 2rem;">
+            <h3>Ustawienia profilu</h3>
+            <form th:action="@{/profile/update}" method="post" class="pure-form pure-form-stacked">
+                <div class="pure-g">
+                    <div class="pure-u-1 pure-u-md-1-2" style="padding-right: 0.5rem;">
+                        <label for="firstName">Imię</label>
+                        <input type="text" id="firstName" name="firstName" th:value="${user.firstName}">
+                    </div>
+                    <div class="pure-u-1 pure-u-md-1-2">
+                        <label for="lastName">Nazwisko</label>
+                        <input type="text" id="lastName" name="lastName" th:value="${user.lastName}">
+                    </div>
+                    <div class="pure-u-1 pure-u-md-1-2" style="padding-right: 0.5rem;">
+                        <label for="height">Wzrost (cm)</label>
+                        <input type="number" id="height" name="height" step="0.1" th:value="${user.height}">
+                    </div>
+                </div>
+
+                <label for="motivationalQuote">Cytat motywacyjny</label>
+                <textarea id="motivationalQuote" name="motivationalQuote" th:text="${user.motivationalQuote}"
+                    rows="2"></textarea>
+
+                <label for="achievement">Historia / Cele</label>
+                <textarea id="achievement" name="achievement" th:text="${user.achievement}" rows="2"></textarea>
+
+                <label for="isPublic" class="pure-checkbox" style="margin: 1rem 0;">
+                    <input type="checkbox" id="isPublic" name="isPublic" th:checked="${user.isPublic}"> Publiczny profil
+                </label>
+
+                <button type="submit" class="pure-button"
+                    style="background-color: var(--secondary-color); color: white;">Zapisz profil</button>
+            </form>
+        </div>
+
+        <script th:inline="javascript">
+            /*<![CDATA[*/
+            const userId = /*[[${user.id}]]*/ 0;
+            const chartLabels = /*[[${chartLabels}]]*/[];
+            const chartData = /*[[${chartData}]]*/[];
+            /*]]>*/
+        </script>
+
+        <script>
+            let weightChart = null;
+
+            function initChart() {
+                const ctx = document.getElementById('weightChart').getContext('2d');
+                const data = {
+                    labels: [],
+                    datasets: [{
+                        label: 'Waga (kg)',
+                        data: [],
+                        borderColor: '#0984e3',
+                        backgroundColor: 'rgba(9, 132, 227, 0.1)',
+                        tension: 0.3,
+                        fill: true
+                    }]
+                };
+
+                if (chartLabels && chartData) {
+                    chartLabels.forEach((label, index) => {
+                        data.labels.push(label);
+                        data.datasets[0].data.push(chartData[index]);
+                    });
+                }
+
+                weightChart = new Chart(ctx, {
+                    type: 'line',
+                    data: data,
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: { beginAtZero: false }
+                        },
+                        plugins: {
+                            legend: { display: false }
+                        }
+                    }
+                });
+            }
+
+            window.onload = function () {
+                initChart();
+            };
+        </script>
+    </div>
+</body>
+
+</html>

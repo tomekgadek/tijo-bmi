@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="pl" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="base.html :: head"></head>
+
+<body th:replace="base.html :: layout(~{::content})">
+    <div th:fragment="content">
+        <div style="margin-bottom: 2rem;">
+            <a href="/admin/dashboard"
+                style="text-decoration: none; color: var(--accent-color); font-size: 0.9rem;">&larr; Powrót do
+                panelu</a>
+            <h1 th:text="'Szczegóły: ' + ${user.username}">Szczegóły</h1>
+        </div>
+
+        <div class="pure-g">
+            <div class="pure-u-1 pure-u-md-1-2" style="padding: 0.5rem;">
+                <div class="card">
+                    <h3>Dane użytkownika</h3>
+                    <p><strong>Imię i nazwisko:</strong> <span
+                            th:text="${user.firstName != null ? user.firstName + ' ' + user.lastName : '-'}"></span></p>
+                    <p><strong>Wzrost:</strong> <span
+                            th:text="${user.height != null ? user.height + ' cm' : '-'}"></span></p>
+                    <p><strong>Status:</strong> <span th:text="${user.isPublic ? 'Publiczny' : 'Prywatny'}"></span></p>
+                    <p><strong>Utworzono:</strong> <span
+                            th:text="${user.createdAt != null ? #temporals.format(user.createdAt, 'dd.MM.yyyy HH:mm') : '-'}"></span>
+                    </p>
+                </div>
+            </div>
+            <div class="pure-u-1 pure-u-md-1-2" style="padding: 0.5rem;">
+                <div class="card">
+                    <h3>Osiągnięcia i Cele</h3>
+                    <p
+                        th:text="${user.achievement != null and user.achievement != '' ? user.achievement : 'Brak danych.'}">
+                    </p>
+                    <div th:if="${user.motivationalQuote != null and user.motivationalQuote != ''}"
+                        style="margin-top: 1rem; font-style: italic; color: var(--secondary-color);">
+                        <span th:text="'&quot;' + user.motivationalQuote + '&quot;'"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h3>Historia wag</h3>
+            <table class="pure-table pure-table-horizontal" style="width: 100%; font-size: 0.9rem;">
+                <thead>
+                    <tr>
+                        <th>Data</th>
+                        <th>Waga</th>
+                        <th>BMI</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="record : ${weightHistory}">
+                        <td
+                            th:text="${record.recordDate != null ? #temporals.format(record.recordDate, 'dd.MM.yyyy') : '-'}">
+                        </td>
+                        <td th:text="${record.weight} + ' kg'"></td>
+                        <td
+                            th:text="${record.calculateBMI() != null ? #numbers.formatDecimal(record.calculateBMI(), 1, 1) : '-'}">
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="card" style="border: 1px solid #fab1a0; background-color: #fffaf9;">
+            <h3 style="color: #d63031;">Strefa niebezpieczna</h3>
+            <p style="font-size: 0.8rem; color: var(--secondary-color);">Zarządzaj dostępem użytkownika.</p>
+
+            <div style="display: flex; gap: 0.5rem;">
+                <a th:if="${!user.isBlocked}" th:href="@{/admin/user/block/{id}(id=${user.id})}" class="pure-button"
+                    style="background-color: #fab1a0; color: #d63031;">Blokuj użytkownika</a>
+                <a th:if="${user.isBlocked}" th:href="@{/admin/user/unblock/{id}(id=${user.id})}" class="pure-button"
+                    style="background-color: #55efc4; color: #00b894;">Odblokuj użytkownika</a>
+
+                <form th:action="@{/admin/user/delete/{id}(id=${user.id})}" method="post"
+                    onsubmit="return confirm('Czy na pewno chcesz usunąć tego użytkownika?')">
+                    <button type="submit" class="pure-button" style="background-color: #d63031; color: white;">Usuń
+                        użytkownika</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
