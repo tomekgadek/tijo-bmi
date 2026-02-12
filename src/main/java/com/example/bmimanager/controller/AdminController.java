@@ -5,7 +5,6 @@ import com.example.bmimanager.entity.WeightRecord;
 import com.example.bmimanager.service.BMIFacadeService;
 import com.example.bmimanager.service.UserService;
 import com.example.bmimanager.service.WeightService;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -41,8 +40,7 @@ public class AdminController {
 
         List<User> allUsers = userService.getUserRepository().findAll();
 
-        // Prepare data for the chart - handle null BMIs by converting them to 0 or
-        // omitting
+        // Prepare data for the chart - handle null BMIs by converting them to 0 or omitting
         List<String> usernames = allUsers.stream().map(User::getUsername).collect(Collectors.toList());
         List<Double> currentBMIs = allUsers.stream()
                 .map(user -> {

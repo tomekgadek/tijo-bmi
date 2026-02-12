@@ -1,7 +1,7 @@
 package com.example.bmimanager.repository;
 
-import com.example.bmimanager.entity.WeightRecord;
 import com.example.bmimanager.entity.User;
+import com.example.bmimanager.entity.WeightRecord;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

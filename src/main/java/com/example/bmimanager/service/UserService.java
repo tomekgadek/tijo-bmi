@@ -23,7 +23,13 @@ public class UserService {
             throw new IllegalArgumentException("Username już istnieje");
         }
 
-        User user = new User(username, passwordEncoder.encode(password));
+        User user = User.builder()
+                .username(username)
+                .password(passwordEncoder.encode(password))
+                .isPublic(false)
+                .isBlocked(false)
+                .resultsPerPage(25)
+                .build();
         return userRepository.save(user);
     }
 

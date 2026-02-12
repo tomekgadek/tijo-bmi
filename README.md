@@ -146,4 +146,5 @@ Tomasz Gądek
 + Pozbycie się niepotrzebnego nadmiarowego kodu.
 + Usunięcie niepotrzebnych komentarzy.
 + Dopracowanie UI (jeszcze nie działa dobrze).
++ Modele LLM tworzą działający kod, ale wymagają jeszcze refaktoryzacji - pasuje przeanalizować cały kod.
 

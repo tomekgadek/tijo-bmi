@@ -1,7 +1,7 @@
 package com.example.bmimanager.service;
 
-import com.example.bmimanager.entity.WeightRecord;
 import com.example.bmimanager.entity.User;
+import com.example.bmimanager.entity.WeightRecord;
 import com.example.bmimanager.repository.WeightRecordRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -21,12 +21,20 @@ public class WeightService {
     }
 
     public WeightRecord addWeightRecord(User user, Double weight) {
-        WeightRecord record = new WeightRecord(user, weight, LocalDate.now());
+        WeightRecord record =  WeightRecord.builder()
+                .user(user)
+                .weight(weight)
+                .recordDate(LocalDate.now())
+                .build();
         return weightRecordRepository.save(record);
     }
 
     public WeightRecord addWeightRecord(User user, Double weight, LocalDate recordDate) {
-        WeightRecord record = new WeightRecord(user, weight, recordDate);
+        WeightRecord record =  WeightRecord.builder()
+                .user(user)
+                .weight(weight)
+                .recordDate(LocalDate.now())
+                .build();
         return weightRecordRepository.save(record);
     }
 

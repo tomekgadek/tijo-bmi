@@ -64,7 +64,7 @@ public class PublicProfileController {
         List<WeightRecord> currentSlice = paginatedHistory.getContent();
         List<WeightRecord> chronologicalSlice = currentSlice.stream()
                 .sorted((a, b) -> a.getRecordDate().compareTo(b.getRecordDate()))
-                .collect(Collectors.toList());
+                .toList();
 
         List<String> chartLabels = chronologicalSlice.stream()
                 .map(r -> r.getRecordDate().toString())

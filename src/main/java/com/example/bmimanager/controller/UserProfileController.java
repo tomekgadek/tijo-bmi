@@ -4,15 +4,16 @@ import com.example.bmimanager.entity.User;
 import com.example.bmimanager.entity.WeightRecord;
 import com.example.bmimanager.service.BMIFacadeService;
 import com.example.bmimanager.service.UserService;
+import org.springframework.data.domain.Page;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
-import org.springframework.data.domain.Page;
 
 @Controller
 @RequestMapping("/profile")
@@ -48,8 +49,8 @@ public class UserProfileController {
         // Reverse for chart: table is newest-first, chart should be chronological
         // (left-to-right)
         List<WeightRecord> chronologicalSlice = currentSlice.stream()
-                .sorted((a, b) -> a.getRecordDate().compareTo(b.getRecordDate()))
-                .collect(Collectors.toList());
+                .sorted(Comparator.comparing(WeightRecord::getRecordDate))
+                .toList();
 
         List<String> chartLabels = chronologicalSlice.stream()
                 .map(r -> r.getRecordDate().toString())
