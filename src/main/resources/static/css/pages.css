@@ -1,0 +1,541 @@
+/* === Page-Specific Styles === */
+
+/* === Index Page (Homepage) === */
+.hero-section {
+    text-align: center;
+    padding: 4rem 1rem;
+    background: radial-gradient(circle at top, #ffffff, #f5f6fa);
+    border-radius: 12px;
+    margin-bottom: 2rem;
+}
+
+.hero-title {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    letter-spacing: -1px;
+}
+
+.hero-subtitle {
+    color: var(--secondary-color);
+    font-size: 1.25rem;
+    margin-bottom: 2.5rem;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.hero-cta {
+    font-size: 1.1rem;
+    padding: 1rem 2.5rem;
+    border-radius: 50px;
+}
+
+.hero-login-text {
+    margin-top: 1.5rem;
+    font-size: 0.95rem;
+    color: var(--secondary-color);
+}
+
+.hero-login-link {
+    color: var(--accent-color);
+    text-decoration: none;
+    font-weight: 600;
+}
+
+/* Feature Cards */
+.feature-column {
+    padding: 0.5rem;
+    display: flex;
+}
+
+.feature-card {
+    flex: 1;
+    margin-bottom: 0;
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+}
+
+.feature-icon {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+}
+
+.feature-title {
+    color: var(--accent-color);
+    margin-bottom: 1rem;
+}
+
+.feature-description {
+    font-size: 0.95rem;
+    color: var(--secondary-color);
+    flex: 1;
+}
+
+/* === Auth Pages (Login & Register) === */
+.auth-card {
+    max-width: 400px;
+    margin: 2rem auto;
+}
+
+.auth-error {
+    color: #d63031;
+    margin-bottom: 1rem;
+    font-size: 0.9rem;
+}
+
+.auth-submit-btn {
+    width: 100%;
+    margin-top: 1rem;
+}
+
+.auth-footer-text {
+    text-align: center;
+    margin-top: 1.5rem;
+    font-size: 0.9rem;
+    color: var(--secondary-color);
+}
+
+.auth-link {
+    color: var(--accent-color);
+    text-decoration: none;
+}
+
+/* === Profile Page === */
+.profile-alert {
+    border-left: 4px solid #f1c40f;
+}
+
+.profile-alert-text {
+    font-size: 0.9rem;
+    color: var(--secondary-color);
+}
+
+.profile-status {
+    text-align: right;
+}
+
+.profile-status-text {
+    font-size: 0.8rem;
+    color: var(--secondary-color);
+}
+
+.profile-status-value {
+    font-weight: 600;
+}
+
+.stat-card {
+    text-align: center;
+    padding: 1rem;
+}
+
+.stat-label {
+    font-size: 0.7rem;
+    color: var(--secondary-color);
+    text-transform: uppercase;
+}
+
+.stat-value {
+    font-size: 1.5rem;
+    font-weight: 600;
+}
+
+.stat-unit {
+    font-size: 0.7rem;
+    color: var(--secondary-color);
+}
+
+.stat-category {
+    font-size: 0.7rem;
+    color: var(--accent-color);
+}
+
+.weight-form {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    align-items: flex-end;
+}
+
+.weight-form-field {
+    flex: 1;
+    min-width: 120px;
+}
+
+.weight-form-field-wide {
+    flex: 1;
+    min-width: 150px;
+}
+
+.weight-form-label {
+    font-size: 0.7rem;
+    color: var(--secondary-color);
+}
+
+.weight-form-input {
+    margin-bottom: 0;
+}
+
+.chart-container {
+    height: 300px;
+    position: relative;
+}
+
+.quote-card {
+    background-color: #fafafa;
+    font-style: italic;
+    border-left: 4px solid var(--accent-color);
+}
+
+.history-details {
+    padding: 0;
+}
+
+.history-summary {
+    padding: 1rem;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.history-content {
+    padding: 1rem;
+    border-top: 1px solid #eee;
+}
+
+.history-table {
+    width: 100%;
+    font-size: 0.9rem;
+}
+
+.history-actions {
+    text-align: right;
+    white-space: nowrap;
+}
+
+.history-edit-btn {
+    padding: 0.2rem 0.5rem;
+    font-size: 0.7rem;
+    background-color: #eee;
+    color: var(--secondary-color);
+    border: none;
+    margin-right: 0.2rem;
+}
+
+.history-delete-form {
+    display: inline;
+}
+
+.history-delete-btn {
+    padding: 0.2rem 0.5rem;
+    font-size: 0.7rem;
+    background-color: #fab1a0;
+    color: #d63031;
+    border: none;
+}
+
+.pagination-info {
+    font-size: 0.9rem;
+    color: var(--secondary-color);
+}
+
+.pagination-button {
+    padding: 0.2rem 0.5rem;
+    font-size: 0.8rem;
+}
+
+.pagination-text {
+    margin: 0 1rem;
+    font-size: 0.9rem;
+}
+
+.pagination-form {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.pagination-label {
+    font-size: 0.8rem;
+    margin-right: 0.5rem;
+    color: var(--secondary-color);
+}
+
+.pagination-select {
+    padding: 0.2rem;
+    border-radius: 4px;
+    border: 1px solid #ddd;
+    font-size: 0.8rem;
+    width: auto;
+    margin-bottom: 0;
+}
+
+.profile-edit-section {
+    margin-top: 2rem;
+}
+
+.profile-edit-half {
+    padding-right: 0.5rem;
+}
+
+.profile-checkbox-label {
+    margin: 1rem 0;
+}
+
+.profile-save-btn {
+    background-color: var(--secondary-color);
+    color: white;
+}
+
+/* === Public Profiles === */
+.page-header {
+    margin-bottom: 2rem;
+}
+
+.page-subtitle {
+    color: var(--secondary-color);
+}
+
+.back-link {
+    text-decoration: none;
+    color: var(--accent-color);
+    font-size: 0.9rem;
+}
+
+.profile-grid-item {
+    padding: 0.5rem;
+}
+
+.profile-card-full {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.profile-card-content {
+    flex: 1;
+}
+
+.profile-quote {
+    font-style: italic;
+    font-size: 0.9rem;
+    color: var(--secondary-color);
+    margin-bottom: 1rem;
+}
+
+.profile-achievement-section {
+    margin-bottom: 1rem;
+}
+
+.achievement-label {
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    color: var(--accent-color);
+}
+
+.achievement-text {
+    font-size: 0.9rem;
+    margin-top: 0.2rem;
+}
+
+.profile-stats {
+    margin-top: 1rem;
+    border-top: 1px solid #eee;
+    padding-top: 1rem;
+}
+
+.profile-stats-grid {
+    text-align: center;
+    margin-bottom: 1rem;
+}
+
+.profile-stat-label {
+    font-size: 0.7rem;
+    color: var(--secondary-color);
+    text-transform: uppercase;
+}
+
+.profile-stat-value {
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.profile-stat-value-accent {
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: var(--accent-color);
+}
+
+.profile-view-btn {
+    font-size: 0.8rem;
+    width: 100%;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 3rem;
+}
+
+/* === Public Profile View === */
+.profile-detail-quote {
+    margin: 1.5rem 0;
+    padding: 1rem;
+    background: #fafafa;
+    border-left: 4px solid var(--accent-color);
+    font-style: italic;
+}
+
+.profile-detail-achievement {
+    margin: 1.5rem 0;
+}
+
+.profile-detail-stats {
+    border-top: 1px solid #eee;
+    padding-top: 1rem;
+}
+
+.profile-detail-stat-label {
+    font-size: 0.8rem;
+    color: var(--secondary-color);
+}
+
+.profile-detail-stat-value {
+    font-weight: 600;
+}
+
+.profile-detail-bmi {
+    margin-top: 1rem;
+    border-top: 1px solid #eee;
+    padding-top: 1rem;
+}
+
+.table-container {
+}
+
+.table-full {
+    width: 100%;
+    border: none;
+}
+
+.table-header-subtle {
+    color: var(--secondary-color);
+    font-weight: 500;
+}
+
+/* === Admin Dashboard === */
+.stats-grid {
+    margin-bottom: 2rem;
+}
+
+.stat-grid-item {
+    padding: 0.5rem;
+}
+
+.stat-card-centered {
+    text-align: center;
+    margin-bottom: 0;
+}
+
+.stat-card-label {
+    font-size: 0.7rem;
+    color: var(--secondary-color);
+    text-transform: uppercase;
+}
+
+.stat-card-value {
+    font-size: 2rem;
+    font-weight: 600;
+}
+
+.stat-card-value-success {
+    font-size: 2rem;
+    font-weight: 600;
+    color: #2ecc71;
+}
+
+.stat-card-value-danger {
+    font-size: 2rem;
+    font-weight: 600;
+    color: #e74c3c;
+}
+
+.table-overflow {
+    overflow-x: auto;
+}
+
+.admin-table {
+    width: 100%;
+    font-size: 0.9rem;
+}
+
+.user-name {
+    font-weight: 600;
+}
+
+.user-details {
+    font-size: 0.7rem;
+    color: var(--secondary-color);
+}
+
+.status-badge {
+    font-size: 0.7rem;
+    padding: 2px 6px;
+    border-radius: 4px;
+    color: white;
+}
+
+.status-badge-public {
+    background-color: #2ecc71;
+}
+
+.status-badge-private {
+    background-color: #e74c3c;
+}
+
+.admin-action-btn {
+    font-size: 0.7rem;
+}
+
+/* === Admin User Details === */
+.user-detail-grid {
+    padding: 0.5rem;
+}
+
+.danger-zone {
+    border: 1px solid #fab1a0;
+    background-color: #fffaf9;
+}
+
+.danger-zone-title {
+    color: #d63031;
+}
+
+.danger-zone-subtitle {
+    font-size: 0.8rem;
+    color: var(--secondary-color);
+}
+
+.danger-zone-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.block-btn {
+    background-color: #fab1a0;
+    color: #d63031;
+}
+
+.unblock-btn {
+    background-color: #55efc4;
+    color: #00b894;
+}
+
+.delete-btn {
+    background-color: #d63031;
+    color: white;
+}
+
+.user-quote {
+    margin-top: 1rem;
+    font-style: italic;
+    color: var(--secondary-color);
+}

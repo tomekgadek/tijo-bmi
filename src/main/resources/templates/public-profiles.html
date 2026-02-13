@@ -5,65 +5,60 @@
 
 <body th:replace="~{base.html :: layout(~{::content})}">
     <div th:fragment="content">
-        <div style="margin-bottom: 2rem;">
+        <div class="page-header">
             <h1>Społeczność</h1>
-            <p style="color: var(--secondary-color);">Przeglądaj profile innych użytkowników i czerp inspirację.</p>
+            <p class="page-subtitle">Przeglądaj profile innych użytkowników i czerp inspirację.</p>
         </div>
 
         <div th:if="${profiles != null and !profiles.empty}" class="pure-g">
-            <div th:each="dto : ${profiles}" class="pure-u-1 pure-u-md-1-2" style="padding: 0.5rem;">
-                <div class="card" style="height: 100%; display: flex; flex-direction: column;">
+            <div th:each="dto : ${profiles}" class="pure-u-1 pure-u-md-1-2 profile-grid-item">
+                <div class="card profile-card-full">
                     <h3
                         th:text="${dto.user.firstName != null ? dto.user.firstName + ' ' + (dto.user.lastName != null ? dto.user.lastName : '') : dto.user.username}">
                         Imię Nazwisko</h3>
 
-                    <div style="flex: 1;">
+                    <div class="profile-card-content">
                         <p th:if="${dto.user.motivationalQuote != null and dto.user.motivationalQuote != ''}"
-                            style="font-style: italic; font-size: 0.9rem; color: var(--secondary-color); margin-bottom: 1rem;">
+                            class="profile-quote">
                             <span th:text="${'&quot;' + dto.user.motivationalQuote + '&quot;'}"></span>
                         </p>
 
                         <div th:if="${dto.user.achievement != null and dto.user.achievement != ''}"
-                            style="margin-bottom: 1rem;">
-                            <strong
-                                style="font-size: 0.8rem; text-transform: uppercase; color: var(--accent-color);">Osiągnięcia:</strong>
-                            <p style="font-size: 0.9rem; margin-top: 0.2rem;" th:text="${dto.user.achievement}"></p>
+                            class="profile-achievement-section">
+                            <strong class="achievement-label">Osiągnięcia:</strong>
+                            <p class="achievement-text" th:text="${dto.user.achievement}"></p>
                         </div>
                     </div>
 
-                    <div style="margin-top: 1rem; border-top: 1px solid #eee; padding-top: 1rem;">
-                        <div class="pure-g" style="text-align: center; margin-bottom: 1rem;">
+                    <div class="profile-stats">
+                        <div class="pure-g profile-stats-grid">
                             <div class="pure-u-1-3">
-                                <span
-                                    style="font-size: 0.7rem; color: var(--secondary-color); text-transform: uppercase;">Wzrost</span>
-                                <div style="font-weight: 600; font-size: 0.9rem;"
+                                <span class="profile-stat-label">Wzrost</span>
+                                <div class="profile-stat-value"
                                     th:text="${dto.user.height != null ? dto.user.height + ' cm' : '-'}"></div>
                             </div>
                             <div class="pure-u-1-3">
-                                <span
-                                    style="font-size: 0.7rem; color: var(--secondary-color); text-transform: uppercase;">Waga</span>
-                                <div style="font-weight: 600; font-size: 0.9rem;"
+                                <span class="profile-stat-label">Waga</span>
+                                <div class="profile-stat-value"
                                     th:text="${dto.currentWeight != null ? dto.currentWeight + ' kg' : '-'}"></div>
                             </div>
                             <div class="pure-u-1-3">
-                                <span
-                                    style="font-size: 0.7rem; color: var(--secondary-color); text-transform: uppercase;">BMI</span>
-                                <div style="font-weight: 600; font-size: 0.9rem; color: var(--accent-color);"
+                                <span class="profile-stat-label">BMI</span>
+                                <div class="profile-stat-value-accent"
                                     th:text="${dto.currentBMI != null ? #numbers.formatDecimal(dto.currentBMI, 1, 1) : '-'}">
                                 </div>
                             </div>
                         </div>
                         <div style="text-align: center;">
-                            <a th:href="@{/public/profile/{id}(id=${dto.user.id})}" class="pure-button"
-                                style="font-size: 0.8rem; width: 100%;">Zobacz pełny profil</a>
+                            <a th:href="@{/public/profile/{id}(id=${dto.user.id})}" class="pure-button profile-view-btn">Zobacz pełny profil</a>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div th:if="${profiles == null or profiles.empty}" class="card" style="text-align: center; padding: 3rem;">
-            <p style="color: var(--secondary-color);">Brak publicznych profili.</p>
+        <div th:if="${profiles == null or profiles.empty}" class="card empty-state">
+            <p class="page-subtitle">Brak publicznych profili.</p>
         </div>
     </div>
 </body>

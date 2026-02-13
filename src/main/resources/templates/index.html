@@ -5,55 +5,47 @@
 
 <body th:replace="~{base.html :: layout(~{::content})}">
     <div th:fragment="content">
-        <div
-            style="text-align: center; padding: 4rem 1rem; background: radial-gradient(circle at top, #ffffff, #f5f6fa); border-radius: 12px; margin-bottom: 2rem;">
-            <h1 style="font-size: 3rem; margin-bottom: 1rem; letter-spacing: -1px;">Twoja waga pod kontrolą.</h1>
-            <p
-                style="color: var(--secondary-color); font-size: 1.25rem; margin-bottom: 2.5rem; max-width: 600px; margin-left: auto; margin-right: auto;">
+        <div class="hero-section">
+            <h1 class="hero-title">Twoja waga pod kontrolą.</h1>
+            <p class="hero-subtitle">
                 Proste, minimalistyczne narzędzie do śledzenia wagi i BMI, które pomoże Ci osiągnąć Twoje cele
                 zdrowotne.
             </p>
 
             <div sec:authorize="!isAuthenticated()">
-                <a href="/register" class="pure-button pure-button-primary"
-                    style="font-size: 1.1rem; padding: 1rem 2.5rem; border-radius: 50px;">Zacznij teraz — to darmowe</a>
-                <p style="margin-top: 1.5rem; font-size: 0.95rem; color: var(--secondary-color);">
-                    Masz już konto? <a href="/login"
-                        style="color: var(--accent-color); text-decoration: none; font-weight: 600;">Zaloguj się</a>
+                <a href="/register" class="pure-button pure-button-primary hero-cta">Zacznij teraz — to darmowe</a>
+                <p class="hero-login-text">
+                    Masz już konto? <a href="/login" class="hero-login-link">Zaloguj się</a>
                 </p>
             </div>
 
             <div sec:authorize="isAuthenticated()">
-                <a href="/profile" class="pure-button pure-button-primary"
-                    style="font-size: 1.1rem; padding: 1rem 2.5rem; border-radius: 50px;">Mój Dashboard</a>
+                <a href="/profile" class="pure-button pure-button-primary hero-cta">Mój Dashboard</a>
             </div>
         </div>
 
         <div class="pure-g">
-            <div class="pure-u-1 pure-u-md-1-3" style="padding: 0.5rem; display: flex;">
-                <div class="card"
-                    style="flex: 1; margin-bottom: 0; display: flex; flex-direction: column; text-align: center;">
-                    <div style="font-size: 2rem; margin-bottom: 1rem;">📊</div>
-                    <h3 style="color: var(--accent-color); margin-bottom: 1rem;">Statystyki</h3>
-                    <p style="font-size: 0.95rem; color: var(--secondary-color); flex: 1;">Śledź swoją wagę i BMI na
+            <div class="pure-u-1 pure-u-md-1-3 feature-column">
+                <div class="card feature-card">
+                    <div class="feature-icon">📊</div>
+                    <h3 class="feature-title">Statystyki</h3>
+                    <p class="feature-description">Śledź swoją wagę i BMI na
                         interaktywnych wykresach aktualizowanych w czasie rzeczywistym.</p>
                 </div>
             </div>
-            <div class="pure-u-1 pure-u-md-1-3" style="padding: 0.5rem; display: flex;">
-                <div class="card"
-                    style="flex: 1; margin-bottom: 0; display: flex; flex-direction: column; text-align: center;">
-                    <div style="font-size: 2rem; margin-bottom: 1rem;">📱</div>
-                    <h3 style="color: var(--accent-color); margin-bottom: 1rem;">Mobilność</h3>
-                    <p style="font-size: 0.95rem; color: var(--secondary-color); flex: 1;">Zaprojektowane z myślą o
+            <div class="pure-u-1 pure-u-md-1-3 feature-column">
+                <div class="card feature-card">
+                    <div class="feature-icon">📱</div>
+                    <h3 class="feature-title">Mobilność</h3>
+                    <p class="feature-description">Zaprojektowane z myślą o
                         telefonach. Dodawaj wagę szybko i wygodnie, gdziekolwiek jesteś.</p>
                 </div>
             </div>
-            <div class="pure-u-1 pure-u-md-1-3" style="padding: 0.5rem; display: flex;">
-                <div class="card"
-                    style="flex: 1; margin-bottom: 0; display: flex; flex-direction: column; text-align: center;">
-                    <div style="font-size: 2rem; margin-bottom: 1rem;">🔒</div>
-                    <h3 style="color: var(--accent-color); margin-bottom: 1rem;">Prywatność</h3>
-                    <p style="font-size: 0.95rem; color: var(--secondary-color); flex: 1;">Twoje dane są u nas
+            <div class="pure-u-1 pure-u-md-1-3 feature-column">
+                <div class="card feature-card">
+                    <div class="feature-icon">🔒</div>
+                    <h3 class="feature-title">Prywatność</h3>
+                    <p class="feature-description">Twoje dane są u nas
                         bezpieczne. Udostępnij swój profil publicznie tylko jeśli sam o tym zdecydujesz.</p>
                 </div>
             </div>

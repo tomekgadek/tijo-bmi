@@ -5,10 +5,9 @@
 
 <body th:replace="~{base.html :: layout(~{::content})}">
     <div th:fragment="content">
-        <div class="card" style="max-width: 400px; margin: 2rem auto;">
+        <div class="card auth-card">
             <h2>Zaloguj się</h2>
-            <div th:if="${param.error}" class="pure-alert pure-alert-error"
-                style="color: #d63031; margin-bottom: 1rem; font-size: 0.9rem;">
+            <div th:if="${param.error}" class="pure-alert pure-alert-error auth-error">
                 Nieprawidłowy login lub hasło.
             </div>
             <form th:action="@{/login}" method="post" class="pure-form pure-form-stacked">
@@ -18,12 +17,10 @@
                 <label for="password">Hasło</label>
                 <input type="password" id="password" name="password" required>
 
-                <button type="submit" class="pure-button pure-button-primary"
-                    style="width: 100%; margin-top: 1rem;">Zaloguj</button>
+                <button type="submit" class="pure-button pure-button-primary auth-submit-btn">Zaloguj</button>
             </form>
-            <p style="text-align: center; margin-top: 1.5rem; font-size: 0.9rem; color: var(--secondary-color);">
-                Nie masz konta? <a href="/register"
-                    style="color: var(--accent-color); text-decoration: none;">Zarejestruj się</a>
+            <p class="auth-footer-text">
+                Nie masz konta? <a href="/register" class="auth-link">Zarejestruj się</a>
             </p>
         </div>
     </div>
