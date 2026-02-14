@@ -273,8 +273,12 @@
     margin-top: 2rem;
 }
 
-.profile-edit-half {
+.profile-edit-half-right {
     padding-right: 0.5rem;
+}
+
+.profile-edit-half-left {
+    left: 0.5rem;
 }
 
 .profile-checkbox-label {

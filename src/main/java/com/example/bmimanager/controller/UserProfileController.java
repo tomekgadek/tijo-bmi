@@ -1,9 +1,11 @@
 package com.example.bmimanager.controller;
 
-import com.example.bmimanager.entity.User;
+import com.example.bmimanager.entity.BmiUser;
 import com.example.bmimanager.entity.WeightRecord;
 import com.example.bmimanager.service.BMIFacadeService;
 import com.example.bmimanager.service.UserService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
@@ -19,6 +21,8 @@ import java.util.stream.Collectors;
 @RequestMapping("/profile")
 public class UserProfileController {
 
+    private final Logger log = LoggerFactory.getLogger(UserProfileController.class);
+
     private final BMIFacadeService bmiFacadeService;
     private final UserService userService;
 
@@ -33,16 +37,16 @@ public class UserProfileController {
             @RequestParam(required = false) Integer size,
             Authentication authentication, Model model) {
         String username = authentication.getName();
-        User user = userService.findByUsername(username).orElse(null);
+        BmiUser bmiUser = userService.findByUsername(username).orElse(null);
 
-        if (user == null) {
+        if (bmiUser == null) {
             return "redirect:/login";
         }
 
-        int pageSize = (size != null) ? size : user.getResultsPerPage();
+        int pageSize = (size != null) ? size : bmiUser.getResultsPerPage();
 
-        BMIFacadeService.BMIStatistics stats = bmiFacadeService.getBMIStatistics(user.getId());
-        Page<WeightRecord> paginatedHistory = bmiFacadeService.getPaginatedUserWeightHistory(user.getId(), page,
+        BMIFacadeService.BMIStatistics stats = bmiFacadeService.getBMIStatistics(bmiUser.getId());
+        Page<WeightRecord> paginatedHistory = bmiFacadeService.getPaginatedUserWeightHistory(bmiUser.getId(), page,
                 pageSize);
 
         List<WeightRecord> currentSlice = paginatedHistory.getContent();
@@ -59,7 +63,7 @@ public class UserProfileController {
                 .map(WeightRecord::getWeight)
                 .collect(Collectors.toList());
 
-        model.addAttribute("user", user);
+        model.addAttribute("user", bmiUser);
         model.addAttribute("stats", stats);
         model.addAttribute("weightHistory", paginatedHistory.getContent());
         model.addAttribute("currentPage", page);
@@ -83,22 +87,21 @@ public class UserProfileController {
     }
 
     @PostMapping("/addWeight")
-    public String addWeight(
-            @RequestParam Double weight,
-            @RequestParam(required = false) String recordDate,
+    public String addWeight(@RequestParam Double weight, @RequestParam(required = false) String recordDate,
             Authentication authentication) {
-        String username = authentication.getName();
-        User user = userService.findByUsername(username).orElse(null);
 
-        if (user != null) {
+        String username = authentication.getName();
+        BmiUser bmiUser = userService.findByUsername(username).orElse(null);
+
+        if (bmiUser != null) {
             try {
                 if (recordDate != null && !recordDate.isEmpty()) {
-                    bmiFacadeService.recordWeight(user.getId(), weight, LocalDate.parse(recordDate));
+                    bmiFacadeService.recordWeight(bmiUser.getId(), weight, LocalDate.parse(recordDate));
                 } else {
-                    bmiFacadeService.recordWeight(user.getId(), weight);
+                    bmiFacadeService.recordWeight(bmiUser.getId(), weight);
                 }
             } catch (Exception e) {
-                // Silently redirect for now, could add error message to flash attributes
+                log.error(e.getMessage());
             }
         }
 
@@ -116,22 +119,21 @@ public class UserProfileController {
             Authentication authentication) {
 
         String username = authentication.getName();
-        User user = userService.findByUsername(username).orElse(null);
+        BmiUser bmiUser = userService.findByUsername(username).orElse(null);
 
-        if (user != null) {
+        if (bmiUser != null) {
             bmiFacadeService.updateUserProfile(
-                    user.getId(), firstName, lastName, height, isPublic, motivationalQuote, achievement);
+                    bmiUser.getId(), firstName, lastName, height, isPublic, motivationalQuote, achievement);
         }
 
         return "redirect:/profile";
     }
 
     @PostMapping("/delete-weight/{recordId}")
-    public String deleteWeightRecord(
-            @PathVariable Long recordId,
-            Authentication authentication) {
+    public String deleteWeightRecord(@PathVariable Long recordId, Authentication authentication) {
+
         String username = authentication.getName();
-        User user = userService.findByUsername(username).orElse(null);
+        BmiUser user = userService.findByUsername(username).orElse(null);
 
         if (user != null) {
             bmiFacadeService.deleteWeightRecord(user.getId(), recordId);

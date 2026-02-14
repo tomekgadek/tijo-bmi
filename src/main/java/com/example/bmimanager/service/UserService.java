@@ -1,7 +1,7 @@
 package com.example.bmimanager.service;
 
-import com.example.bmimanager.entity.User;
-import com.example.bmimanager.repository.UserRepository;
+import com.example.bmimanager.entity.BmiUser;
+import com.example.bmimanager.repository.BmiUserRepository;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -11,40 +11,42 @@ import java.util.Optional;
 @Service
 public class UserService {
 
-    private final UserRepository userRepository;
+    private final BmiUserRepository bmiUserRepository;
     private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
-    public UserService(UserRepository userRepository) {
-        this.userRepository = userRepository;
+    public UserService(BmiUserRepository bmiUserRepository) {
+        this.bmiUserRepository = bmiUserRepository;
     }
 
-    public User registerUser(String username, String password) {
-        if (userRepository.findByUsername(username).isPresent()) {
+    public BmiUser registerUser(String username, String password) {
+        if (bmiUserRepository.findByUsername(username).isPresent()) {
+            // TODO: pasuje wydzielić te komunukaty do zewnętrznego pliku
             throw new IllegalArgumentException("Username już istnieje");
         }
 
-        User user = User.builder()
+        BmiUser bmiUser = BmiUser.builder()
                 .username(username)
                 .password(passwordEncoder.encode(password))
                 .isPublic(false)
                 .isBlocked(false)
                 .resultsPerPage(25)
                 .build();
-        return userRepository.save(user);
+        return bmiUserRepository.save(bmiUser);
     }
 
-    public Optional<User> findByUsername(String username) {
-        return userRepository.findByUsername(username);
+    public Optional<BmiUser> findByUsername(String username) {
+        return bmiUserRepository.findByUsername(username);
     }
 
-    public User getUserById(Long id) {
-        return userRepository.findById(id).orElse(null);
+    public BmiUser getUserById(Long id) {
+        return bmiUserRepository.findById(id).orElse(null);
     }
 
-    public User updateUser(Long userId, String firstName, String lastName, Double height, Boolean isPublic,
-            String motivationalQuote, String achievement) {
-        User user = getUserById(userId);
+    public BmiUser updateUser(Long userId, String firstName, String lastName, Double height, Boolean isPublic,
+                              String motivationalQuote, String achievement) {
+        BmiUser user = getUserById(userId);
         if (user == null) {
+            // TODO: pasuje wydzielić te komunukaty do zewnętrznego pliku
             throw new IllegalArgumentException("Użytkownik nie znaleziony");
         }
 
@@ -55,22 +57,22 @@ public class UserService {
         user.setMotivationalQuote(motivationalQuote);
         user.setAchievement(achievement);
 
-        return userRepository.save(user);
+        return bmiUserRepository.save(user);
     }
 
     public boolean validatePassword(String rawPassword, String encodedPassword) {
         return passwordEncoder.matches(rawPassword, encodedPassword);
     }
 
-    public List<User> getPublicProfiles() {
-        return userRepository.findByIsPublicTrue();
+    public List<BmiUser> getPublicProfiles() {
+        return bmiUserRepository.findByIsPublicTrue();
     }
 
-    public UserRepository getUserRepository() {
-        return userRepository;
+    public BmiUserRepository getUserRepository() {
+        return bmiUserRepository;
     }
 
     public void deleteUser(Long userId) {
-        userRepository.deleteById(userId);
+        bmiUserRepository.deleteById(userId);
     }
 }

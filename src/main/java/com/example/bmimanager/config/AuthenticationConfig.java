@@ -1,5 +1,6 @@
 package com.example.bmimanager.config;
 
+import com.example.bmimanager.entity.BmiUser;
 import com.example.bmimanager.service.UserService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -25,12 +26,11 @@ public class AuthenticationConfig {
     @Bean
     public UserDetailsService userDetailsService() {
         return username -> {
-            com.example.bmimanager.entity.User user = userService.findByUsername(username)
+            BmiUser user = userService.findByUsername(username)
                     .orElseThrow(() -> new org.springframework.security.core.userdetails.UsernameNotFoundException(
                             "Użytkownik nie znaleziony: " + username));
 
-            // Zamiast przypisywać role bezpośrednio, możesz sprawdzić czy użytkownik to
-            // admin
+            // Zamiast przypisywać role bezpośrednio, możesz sprawdzić czy użytkownik to admin
             // Na potrzeby tego projektu admin to użytkownik o username "admin"
             String role = username.equals("admin") ? "ROLE_ADMIN" : "ROLE_USER";
 

@@ -1,6 +1,6 @@
 package com.example.bmimanager.service;
 
-import com.example.bmimanager.entity.User;
+import com.example.bmimanager.entity.BmiUser;
 import com.example.bmimanager.entity.WeightRecord;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
@@ -27,7 +27,7 @@ public class BMIFacadeService {
     /**
      * Rejestruje nowego użytkownika tylko z loginem i hasłem
      */
-    public User registerUser(String username, String password) {
+    public BmiUser registerUser(String username, String password) {
         return userService.registerUser(username, password);
     }
 
@@ -35,32 +35,32 @@ public class BMIFacadeService {
      * Zwraca aktualny BMI użytkownika
      */
     public Double getUserCurrentBMI(Long userId) {
-        User user = userService.getUserById(userId);
-        if (user == null)
+        BmiUser bmiUser = userService.getUserById(userId);
+        if (bmiUser == null)
             return null;
-        return weightService.getCurrentBMI(user);
+        return weightService.getCurrentBMI(bmiUser);
     }
 
     /**
      * Zwraca historię wag wraz z obliczonym BMI
      */
     public List<WeightRecord> getUserWeightHistory(Long userId) {
-        User user = userService.getUserById(userId);
-        if (user == null)
+        BmiUser bmiUser = userService.getUserById(userId);
+        if (bmiUser == null)
             return List.of();
-        return weightService.getUserWeightRecords(user);
+        return weightService.getUserWeightRecords(bmiUser);
     }
 
     public Page<WeightRecord> getPaginatedUserWeightHistory(Long userId, int page, int size) {
-        User user = userService.getUserById(userId);
-        return user != null ? weightService.getPaginatedUserWeightRecords(user, page, size) : Page.empty();
+        BmiUser bmiUser = userService.getUserById(userId);
+        return bmiUser != null ? weightService.getPaginatedUserWeightRecords(bmiUser, page, size) : Page.empty();
     }
 
     /**
      * Dodaje nowy zapis wagi
      */
     public WeightRecord recordWeight(Long userId, Double weight) {
-        User user = userService.getUserById(userId);
+        BmiUser user = userService.getUserById(userId);
         if (user == null) {
             throw new IllegalArgumentException("Użytkownik nie znaleziony");
         }
@@ -71,7 +71,7 @@ public class BMIFacadeService {
      * Dodaje nowy zapis wagi z datą
      */
     public WeightRecord recordWeight(Long userId, Double weight, LocalDate recordDate) {
-        User user = userService.getUserById(userId);
+        BmiUser user = userService.getUserById(userId);
         if (user == null) {
             throw new IllegalArgumentException("Użytkownik nie znaleziony");
         }
@@ -82,9 +82,9 @@ public class BMIFacadeService {
      * Zwraca statystyki BMI
      */
     public BMIStatistics getBMIStatistics(Long userId) {
-        User user = userService.getUserById(userId);
+        BmiUser user = userService.getUserById(userId);
         if (user == null)
-            return null;
+            return null; // TODO: pasuje coś zrobić z tym zwracanym null :(
 
         Double currentWeight = weightService.getCurrentWeight(user);
         Double currentBMI = weightService.getCurrentBMI(user);
@@ -92,6 +92,7 @@ public class BMIFacadeService {
         Double highestWeight = weightService.getHighestWeight(user);
         List<WeightRecord> records = weightService.getUserWeightRecords(user);
 
+        // TODO: nie podoba mi się ta składnia
         WeightRecord latestRecord = records.isEmpty() ? null : records.get(records.size() - 1);
 
         return new BMIStatistics(
@@ -108,6 +109,7 @@ public class BMIFacadeService {
      * Zwraca kategorie BMI
      */
     public String getBMICategory(Double bmi) {
+        // TODO: do zmiany, pasuje użyć enum
         if (bmi == null || bmi == 0)
             return "Brak danych";
         if (bmi < 18.5)
@@ -122,15 +124,15 @@ public class BMIFacadeService {
     /**
      * Aktualizuje profil użytkownika
      */
-    public User updateUserProfile(Long userId, String firstName, String lastName, Double height,
-            Boolean isPublic, String motivationalQuote, String achievement) {
+    public BmiUser updateUserProfile(Long userId, String firstName, String lastName, Double height,
+                                     Boolean isPublic, String motivationalQuote, String achievement) {
         return userService.updateUser(userId, firstName, lastName, height, isPublic, motivationalQuote, achievement);
     }
 
     /**
      * Zwraca publiczne profile
      */
-    public List<User> getPublicProfiles() {
+    public List<BmiUser> getPublicProfiles() {
         return userService.getPublicProfiles();
     }
 
@@ -139,7 +141,7 @@ public class BMIFacadeService {
      */
     public void deleteWeightRecord(Long userId, Long recordId) {
         WeightRecord record = weightService.getWeightRecordById(recordId);
-        if (record != null && record.getUser().getId().equals(userId)) {
+        if (record != null && record.getBmiUser().getId().equals(userId)) {
             weightService.deleteWeightRecord(recordId);
         }
     }

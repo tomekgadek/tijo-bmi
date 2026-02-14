@@ -26,17 +26,16 @@
         </div>
 
         <div class="pure-g stats-grid">
-            <div class="pure-u-1-2 pure-u-md-1-4 profile-edit-half">
+            <div class="pure-u-1-2 pure-u-md-1-4 profile-edit-half-right">
                 <div class="card stat-card">
                     <span class="stat-label">BMI</span>
                     <div id="stat-bmi" class="stat-value"
                         th:text="${stats != null and stats.currentBMI != null ? #numbers.formatDecimal(stats.currentBMI, 1, 'POINT', 1, 'POINT') : '-'}">
                         -</div>
-                    <span id="stat-category" class="stat-category"
-                        th:text="${stats != null ? stats.category : ''}"></span>
+                    <span id="stat-category" class="stat-category" th:text="${stats != null ? stats.category : ''}"></span>
                 </div>
             </div>
-            <div class="pure-u-1-2 pure-u-md-1-4 stat-grid-item">
+            <div class="pure-u-1-2 pure-u-md-1-4 profile-edit-half-left">
                 <div class="card stat-card">
                     <span class="stat-label">Waga</span>
                     <div id="stat-weight" class="stat-value"
@@ -163,7 +162,7 @@
             <h3>Ustawienia profilu</h3>
             <form th:action="@{/profile/update}" method="post" class="pure-form pure-form-stacked">
                 <div class="pure-g">
-                    <div class="pure-u-1 pure-u-md-1-2 profile-edit-half">
+                    <div class="pure-u-1 pure-u-md-1-2 profile-edit-half-right">
                         <label for="firstName">Imię</label>
                         <input type="text" id="firstName" name="firstName" th:value="${user.firstName}">
                     </div>
@@ -171,7 +170,7 @@
                         <label for="lastName">Nazwisko</label>
                         <input type="text" id="lastName" name="lastName" th:value="${user.lastName}">
                     </div>
-                    <div class="pure-u-1 pure-u-md-1-2 profile-edit-half">
+                    <div class="pure-u-1 pure-u-md-1-2 profile-edit-half-right">
                         <label for="height">Wzrost (cm)</label>
                         <input type="number" id="height" name="height" step="0.1" th:value="${user.height}">
                     </div>

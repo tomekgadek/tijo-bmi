@@ -1,6 +1,6 @@
 package com.example.bmimanager.service;
 
-import com.example.bmimanager.entity.User;
+import com.example.bmimanager.entity.BmiUser;
 import com.example.bmimanager.entity.WeightRecord;
 import com.example.bmimanager.repository.WeightRecordRepository;
 import org.springframework.data.domain.Page;
@@ -20,35 +20,35 @@ public class WeightService {
         this.weightRecordRepository = weightRecordRepository;
     }
 
-    public WeightRecord addWeightRecord(User user, Double weight) {
+    public WeightRecord addWeightRecord(BmiUser bmiUser, Double weight) {
         WeightRecord record =  WeightRecord.builder()
-                .user(user)
+                .bmiUser(bmiUser)
                 .weight(weight)
                 .recordDate(LocalDate.now())
                 .build();
         return weightRecordRepository.save(record);
     }
 
-    public WeightRecord addWeightRecord(User user, Double weight, LocalDate recordDate) {
+    public WeightRecord addWeightRecord(BmiUser bmiUser, Double weight, LocalDate recordDate) {
         WeightRecord record =  WeightRecord.builder()
-                .user(user)
+                .bmiUser(bmiUser)
                 .weight(weight)
                 .recordDate(LocalDate.now())
                 .build();
         return weightRecordRepository.save(record);
     }
 
-    public List<WeightRecord> getUserWeightRecords(User user) {
-        return weightRecordRepository.findByUserOrderByRecordDateAsc(user);
+    public List<WeightRecord> getUserWeightRecords(BmiUser bmiUser) {
+        return weightRecordRepository.findByBmiUserOrderByRecordDateAsc(bmiUser);
     }
 
-    public Page<WeightRecord> getPaginatedUserWeightRecords(User user, int page, int size) {
+    public Page<WeightRecord> getPaginatedUserWeightRecords(BmiUser bmiUser, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
-        return weightRecordRepository.findByUserOrderByRecordDateDesc(user, pageable);
+        return weightRecordRepository.findByBmiUserOrderByRecordDateDesc(bmiUser, pageable);
     }
 
-    public List<WeightRecord> getUserWeightRecordsByDateRange(User user, LocalDate startDate, LocalDate endDate) {
-        return weightRecordRepository.findByUserAndDateRange(user, startDate, endDate);
+    public List<WeightRecord> getUserWeightRecordsByDateRange(BmiUser bmiUser, LocalDate startDate, LocalDate endDate) {
+        return weightRecordRepository.findByUserAndDateRange(bmiUser, startDate, endDate);
     }
 
     public void deleteWeightRecord(Long recordId) {
@@ -59,22 +59,23 @@ public class WeightService {
         return weightRecordRepository.findById(recordId).orElse(null);
     }
 
-    public Double getCurrentBMI(User user) {
+    public Double getCurrentBMI(BmiUser user) {
         List<WeightRecord> records = getUserWeightRecords(user);
         if (!records.isEmpty()) {
-            return records.get(records.size() - 1).calculateBMI();
+            return records.getLast().calculateBMI();
         }
         return null;
     }
 
-    public Double getCurrentWeight(User user) {
+    public Double getCurrentWeight(BmiUser user) {
         List<WeightRecord> records = getUserWeightRecords(user);
         if (!records.isEmpty()) {
-            return records.get(records.size() - 1).getWeight();
+            return records.getLast().getWeight();
         }
         return null;
     }
 
+    // TODO: zweryfikować wszystkie nieużywane metody i ostatecznie je usunąć
     public WeightRecord updateWeightRecord(Long recordId, Double weight, LocalDate recordDate) {
         WeightRecord record = getWeightRecordById(recordId);
         if (record != null) {
@@ -85,7 +86,7 @@ public class WeightService {
         return null;
     }
 
-    public Double getLowestWeight(User user) {
+    public Double getLowestWeight(BmiUser user) {
         List<WeightRecord> records = getUserWeightRecords(user);
         return records.stream()
                 .map(WeightRecord::getWeight)
@@ -93,7 +94,7 @@ public class WeightService {
                 .orElse(null);
     }
 
-    public Double getHighestWeight(User user) {
+    public Double getHighestWeight(BmiUser user) {
         List<WeightRecord> records = getUserWeightRecords(user);
         return records.stream()
                 .map(WeightRecord::getWeight)

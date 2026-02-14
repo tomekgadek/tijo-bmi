@@ -1,6 +1,7 @@
 package com.example.bmimanager.controller;
 
-import com.example.bmimanager.entity.User;
+import com.example.bmimanager.dto.PublicProfileDto;
+import com.example.bmimanager.entity.BmiUser;
 import com.example.bmimanager.entity.WeightRecord;
 import com.example.bmimanager.service.BMIFacadeService;
 import com.example.bmimanager.service.UserService;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -33,9 +35,9 @@ public class PublicProfileController {
 
     @GetMapping("/profiles")
     public String viewPublicProfiles(Model model) {
-        List<User> publicUsers = bmiFacadeService.getPublicProfiles();
-        List<PublicProfileDTO> profiles = publicUsers.stream()
-                .map(user -> new PublicProfileDTO(
+        List<BmiUser> publicBmiUsers = bmiFacadeService.getPublicProfiles();
+        List<PublicProfileDto> profiles = publicBmiUsers.stream()
+                .map(user -> new PublicProfileDto(
                         user,
                         weightService.getCurrentWeight(user),
                         weightService.getCurrentBMI(user)))
@@ -51,19 +53,19 @@ public class PublicProfileController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "25") int size,
             Model model) {
-        User user = userService.getUserById(userId);
+        BmiUser bmiUser = userService.getUserById(userId);
 
-        if (user == null || !user.getIsPublic()) {
+        if (bmiUser == null || !bmiUser.getIsPublic()) {
             return "redirect:/public/profiles";
         }
 
         Page<WeightRecord> paginatedHistory = bmiFacadeService.getPaginatedUserWeightHistory(userId, page, size);
         BMIFacadeService.BMIStatistics stats = bmiFacadeService.getBMIStatistics(userId);
 
-        // Prepare chart data (chronological slice)
+        // Przygotowanie danych do wygenerowania wykresu
         List<WeightRecord> currentSlice = paginatedHistory.getContent();
         List<WeightRecord> chronologicalSlice = currentSlice.stream()
-                .sorted((a, b) -> a.getRecordDate().compareTo(b.getRecordDate()))
+                .sorted(Comparator.comparing(WeightRecord::getRecordDate))
                 .toList();
 
         List<String> chartLabels = chronologicalSlice.stream()
@@ -73,7 +75,7 @@ public class PublicProfileController {
                 .map(WeightRecord::getWeight)
                 .collect(Collectors.toList());
 
-        model.addAttribute("profileUser", user);
+        model.addAttribute("profileUser", bmiUser);
         model.addAttribute("weightHistory", paginatedHistory.getContent());
         model.addAttribute("currentPage", page);
         model.addAttribute("totalPages", paginatedHistory.getTotalPages());
@@ -84,30 +86,5 @@ public class PublicProfileController {
         model.addAttribute("chartData", chartData);
 
         return "public-profile-view";
-    }
-
-    public static class PublicProfileDTO {
-        public User user;
-        public Double currentWeight;
-        public Double currentBMI;
-
-        public PublicProfileDTO(User user, Double currentWeight, Double currentBMI) {
-            this.user = user;
-            this.currentWeight = currentWeight;
-            this.currentBMI = currentBMI;
-        }
-
-        // Getters for Thymeleaf
-        public User getUser() {
-            return user;
-        }
-
-        public Double getCurrentWeight() {
-            return currentWeight;
-        }
-
-        public Double getCurrentBMI() {
-            return currentBMI;
-        }
     }
 }

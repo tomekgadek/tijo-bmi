@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class User {
+public class BmiUser {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -59,6 +59,7 @@ public class User {
         createdAt = LocalDateTime.now();
     }
 
+    // TODO: implementacja do innej klasy, BmiUser nie musi miec informacji o paginacji, etc.
     public void setResultsPerPage(Integer resultsPerPage) {
         if (resultsPerPage != null && resultsPerPage > 0 && resultsPerPage <= 100) {
             this.resultsPerPage = resultsPerPage;

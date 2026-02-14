@@ -15,7 +15,6 @@ import java.time.LocalDate;
 @Builder
 public class WeightRecord {
 
-    // Getters and Setters
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -23,7 +22,7 @@ public class WeightRecord {
     @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+    private BmiUser bmiUser;
 
     @Column(nullable = false)
     private Double weight; // w kg
@@ -41,10 +40,10 @@ public class WeightRecord {
         }
     }
 
-    // Calculate BMI
+    // TODO: do poprawy, logika biznesowa do odzielnej klasy
     public Double calculateBMI() {
-        if (user != null && user.getHeight() != null && weight != null) {
-            double heightInMeters = user.getHeight() / 100.0;
+        if (bmiUser != null && bmiUser.getHeight() != null && weight != null) {
+            double heightInMeters = bmiUser.getHeight() / 100.0;
             return weight / (heightInMeters * heightInMeters);
         }
         return null;

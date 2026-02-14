@@ -140,6 +140,7 @@ Tomasz Gądek
 ## Planowane poprawki w kodzie
 
 + Poprawki związane z routingiem na stronie.
++ Przenieść skrypty JS do odzielnej lokalizacji
 + Zmiana frameworków frontendowych.
 + Dopracowanie dokumentacji.
 + Poprawne zastosowanie wzorca projektowego **Fasada**.
@@ -147,4 +148,4 @@ Tomasz Gądek
 + Usunięcie niepotrzebnych komentarzy.
 + Dopracowanie UI (jeszcze nie działa dobrze).
 + Modele LLM tworzą działający kod, ale wymagają jeszcze refaktoryzacji - pasuje przeanalizować cały kod.
-
++ Poprawić kod opisany komentarzami **TODO**
