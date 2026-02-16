@@ -71,44 +71,15 @@
         <div class="card">
             <h3>Rozkład BMI</h3>
             <div class="chart-container">
-                <canvas id="adminBmiChart"></canvas>
+                <canvas id="adminBmiChart"
+                        th:data-usernames="${#json.serialize(usernames)}"
+                        th:data-bmis="${#json.serialize(currentBMIs)}">
+                </canvas>
             </div>
         </div>
-
-        <script th:inline="javascript">
-            /*<![CDATA[*/
-            const usernames = /*[[${usernames}]]*/[];
-            const currentBMIs = /*[[${currentBMIs}]]*/[];
-            /*]]>*/
-
-            window.onload = function () {
-                const ctx = document.getElementById('adminBmiChart').getContext('2d');
-                new Chart(ctx, {
-                    type: 'bar',
-                    data: {
-                        labels: usernames,
-                        datasets: [{
-                            label: 'BMI',
-                            data: currentBMIs,
-                            backgroundColor: 'rgba(9, 132, 227, 0.5)',
-                            borderColor: '#0984e3',
-                            borderWidth: 1
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        scales: {
-                            y: { beginAtZero: true }
-                        },
-                        plugins: {
-                            legend: { display: false }
-                        }
-                    }
-                });
-            };
-        </script>
     </div>
+
+    <script th:src="@{/js/admin-charts.js}"></script>
 </body>
 
 </html>
