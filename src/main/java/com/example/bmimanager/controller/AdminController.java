@@ -5,6 +5,7 @@ import com.example.bmimanager.entity.WeightRecord;
 import com.example.bmimanager.service.BMIFacadeService;
 import com.example.bmimanager.service.UserService;
 import com.example.bmimanager.service.WeightService;
+import org.slf4j.Logger;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -18,6 +19,8 @@ import java.util.stream.Collectors;
 @Controller
 @RequestMapping("/admin")
 public class AdminController {
+
+    private final static Logger log = org.slf4j.LoggerFactory.getLogger(AdminController.class);
 
     private final UserService userService;
     private final WeightService weightService;
@@ -33,6 +36,8 @@ public class AdminController {
     public String adminDashboard(Authentication authentication, Model model) {
         boolean isAdmin = authentication.getAuthorities().stream()
                 .anyMatch(auth -> auth.getAuthority().equals("ROLE_ADMIN"));
+
+        log.info("User {} is admin: {}", authentication.getName(), isAdmin);
 
         if (!isAdmin) {
             return "redirect:/profile";

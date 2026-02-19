@@ -147,16 +147,6 @@
                 </div>
         </details>
 
-        <script>
-            function loadRecordForEdit(btn) {
-                const weight = btn.getAttribute('data-weight');
-                const date = btn.getAttribute('data-date');
-                document.getElementById('new-weight').value = weight;
-                document.getElementById('new-date').value = date;
-                document.getElementById('weight-form').scrollIntoView({ behavior: 'smooth' });
-            }
-        </script>
-
         <!-- Settings / Profile Edit -->
         <div id="profile-edit" class="card profile-edit-section">
             <h3>Ustawienia profilu</h3>
@@ -194,55 +184,12 @@
         <script th:inline="javascript">
             /*<![CDATA[*/
             const userId = /*[[${user.id}]]*/ 0;
-            const chartLabels = /*[[${chartLabels}]]*/[];
-            const chartData = /*[[${chartData}]]*/[];
+            const chartLabels = /*[[${chartLabels}]]*/ [];
+            const chartData = /*[[${chartData}]]*/ [];
             /*]]>*/
         </script>
 
-        <script>
-            let weightChart = null;
-
-            function initChart() {
-                const ctx = document.getElementById('weightChart').getContext('2d');
-                const data = {
-                    labels: [],
-                    datasets: [{
-                        label: 'Waga (kg)',
-                        data: [],
-                        borderColor: '#0984e3',
-                        backgroundColor: 'rgba(9, 132, 227, 0.1)',
-                        tension: 0.3,
-                        fill: true
-                    }]
-                };
-
-                if (chartLabels && chartData) {
-                    chartLabels.forEach((label, index) => {
-                        data.labels.push(label);
-                        data.datasets[0].data.push(chartData[index]);
-                    });
-                }
-
-                weightChart = new Chart(ctx, {
-                    type: 'line',
-                    data: data,
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        scales: {
-                            y: { beginAtZero: false }
-                        },
-                        plugins: {
-                            legend: { display: false }
-                        }
-                    }
-                });
-            }
-
-            window.onload = function () {
-                initChart();
-            };
-        </script>
+        <script th:src="@{/js/bmi-chart.js}"></script>
     </div>
 </body>
 
