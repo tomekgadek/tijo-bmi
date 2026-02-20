@@ -68,18 +68,8 @@
             </div>
         </div>
 
-        <div class="card">
-            <h3>Rozkład BMI</h3>
-            <div class="chart-container">
-                <canvas id="adminBmiChart"
-                        th:data-usernames="${#json.serialize(usernames)}"
-                        th:data-bmis="${#json.serialize(currentBMIs)}">
-                </canvas>
-            </div>
-        </div>
     </div>
 
-    <script th:src="@{/js/admin-charts.js}"></script>
 </body>
 
 </html>

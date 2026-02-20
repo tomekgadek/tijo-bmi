@@ -51,7 +51,7 @@
         <div class="card">
             <h3>Postęp wagi</h3>
             <div class="chart-container">
-                <canvas id="publicWeightChart"></canvas>
+                <canvas id="weight-chart"></canvas>
             </div>
         </div>
 
@@ -118,51 +118,13 @@
         </div>
 
         <script th:inline="javascript">
-            const chartLabels = /*[[${chartLabels}]]*/[];
-            const chartData = /*[[${chartData}]]*/[];
+            /*<![CDATA[*/
+            const chartLabels = /*[[${chartLabels}]]*/ [];
+            const chartData = /*[[${chartData}]]*/ [];
             /*]]>*/
-
-            let weightChart = null;
-
-            function initChart() {
-                const ctx = document.getElementById('publicWeightChart').getContext('2d');
-                const data = {
-                    labels: [],
-                    datasets: [{
-                        label: 'Waga (kg)',
-                        data: [],
-                        borderColor: '#0984e3',
-                        backgroundColor: 'rgba(9, 132, 227, 0.1)',
-                        tension: 0.3,
-                        fill: true
-                    }]
-                };
-
-                if (chartLabels && chartData) {
-                    data.labels = chartLabels;
-                    data.datasets[0].data = chartData;
-                }
-
-                weightChart = new Chart(ctx, {
-                    type: 'line',
-                    data: data,
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        scales: {
-                            y: { beginAtZero: false }
-                        },
-                        plugins: {
-                            legend: { display: false }
-                        }
-                    }
-                });
-            }
-
-            window.onload = function () {
-                initChart();
-            };
         </script>
+
+        <script th:src="@{/js/bmi-chart.js}"></script>
     </div>
 </body>
 

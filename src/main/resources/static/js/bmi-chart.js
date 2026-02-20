@@ -13,7 +13,7 @@ function loadRecordForEdit(btn) {
 let weightChart = null;
 
 function initChart() {
-    const chartElement = document.getElementById('weightChart');
+    const chartElement = document.getElementById('weight-chart');
     if (!chartElement) return;
 
     const ctx = chartElement.getContext('2d');
