@@ -6,8 +6,8 @@
 <body th:replace="~{base.html :: layout(~{::content})}">
     <div th:fragment="content">
         <div class="page-header">
-            <a href="/public/profiles" class="back-link">&larr; Powrót do listy</a>
-            <h1 th:text="'Profil: ' + ${profileUser.username}">Profil</h1>
+            <a href="/public/profiles" class="back-link" th:text="#{public.view.back}">&larr; Powrót do listy</a>
+            <h1 th:text="#{public.view.title(${profileUser.username})}">Profil</h1>
         </div>
 
         <div class="card">
@@ -20,26 +20,27 @@
                 <p th:text="${'&quot;' + profileUser.motivationalQuote + '&quot;'}"></p>
             </div>
 
-            <div th:if="${profileUser.achievement != null and profileUser.achievement != ''}" class="profile-detail-achievement">
-                <strong class="achievement-label">Historia i Cele:</strong>
+            <div th:if="${profileUser.achievement != null and profileUser.achievement != ''}"
+                class="profile-detail-achievement">
+                <strong class="achievement-label" th:text="#{public.view.achievements}">Historia i Cele:</strong>
                 <p class="achievement-text" th:text="${profileUser.achievement}"></p>
             </div>
 
             <div class="pure-g profile-detail-stats">
                 <div class="pure-u-1-2">
-                    <span class="profile-detail-stat-label">Wzrost:</span>
+                    <span class="profile-detail-stat-label" th:text="#{public.view.height}">Wzrost:</span>
                     <p class="profile-detail-stat-value"
                         th:text="${profileUser.height != null ? profileUser.height + ' cm' : '-'}"></p>
                 </div>
                 <div class="pure-u-1-2">
-                    <span class="profile-detail-stat-label">Aktualna waga:</span>
+                    <span class="profile-detail-stat-label" th:text="#{public.view.weight}">Aktualna waga:</span>
                     <p id="stat-weight" class="profile-detail-stat-value"
                         th:text="${stats != null and stats.currentWeight != null ? stats.currentWeight + ' kg' : '-'}">
                     </p>
                 </div>
             </div>
             <div class="profile-detail-bmi">
-                <span class="profile-detail-stat-label">Aktualne BMI:</span>
+                <span class="profile-detail-stat-label" th:text="#{public.view.bmi}">Aktualne BMI:</span>
                 <p class="profile-detail-stat-value">
                     <span id="stat-bmi"
                         th:text="${stats != null and stats.currentBMI != null ? #numbers.formatDecimal(stats.currentBMI, 1, 'POINT', 1, 'POINT') : '-'}"></span>
@@ -49,21 +50,21 @@
         </div>
 
         <div class="card">
-            <h3>Postęp wagi</h3>
+            <h3 th:text="#{public.view.progress}">Postęp wagi</h3>
             <div class="chart-container">
                 <canvas id="weight-chart"></canvas>
             </div>
         </div>
 
         <div class="card" th:if="${weightHistory != null and !weightHistory.empty}">
-            <h3>Historia pomiarów</h3>
+            <h3 th:text="#{public.view.history}">Historia pomiarów</h3>
             <div class="table-container">
                 <table class="pure-table pure-table-horizontal table-full">
                     <thead>
                         <tr>
-                            <th class="table-header-subtle">Data</th>
-                            <th class="table-header-subtle">Waga</th>
-                            <th class="table-header-subtle">BMI</th>
+                            <th class="table-header-subtle" th:text="#{public.view.table.date}">Data</th>
+                            <th class="table-header-subtle" th:text="#{public.view.table.weight}">Waga</th>
+                            <th class="table-header-subtle" th:text="#{public.view.table.bmi}">BMI</th>
                         </tr>
                     </thead>
                     <tbody id="public-history-body">
@@ -80,30 +81,35 @@
                 </table>
 
                 <div class="pagination-container">
-                    <div class="pagination-info">
-                        Pomiary <span th:text="${currentPage * pageSize + 1}"></span> -
-                        <span
-                            th:text="${(currentPage + 1) * pageSize > totalItems ? totalItems : (currentPage + 1) * pageSize}"></span>
-                        z <span th:text="${totalItems}"></span>
+                    <div class="pagination-info"
+                        th:text="#{public.view.pagination.info(${currentPage * pageSize + 1}, ${(currentPage + 1) * pageSize > totalItems ? totalItems : (currentPage + 1) * pageSize}, ${totalItems})}">
+                        Pomiary <span></span> -
+                        <span></span>
+                        z <span></span>
                     </div>
 
                     <div class="pagination" th:if="${totalPages > 1}">
                         <a th:href="@{/public/profile/{id}(id=${profileUser.id}, page=${currentPage - 1}, size=${pageSize})}"
-                            class="pure-button pagination-button" th:classappend="${currentPage == 0} ? 'pure-button-disabled'">Poprzednia</a>
+                            class="pure-button pagination-button"
+                            th:classappend="${currentPage == 0} ? 'pure-button-disabled'"
+                            th:text="#{public.view.pagination.prev}">Poprzednia</a>
 
-                        <span class="pagination-text">
-                            Strona <span th:text="${currentPage + 1}"></span> z <span th:text="${totalPages}"></span>
+                        <span class="pagination-text"
+                            th:text="#{public.view.pagination.page(${currentPage + 1}, ${totalPages})}">
+                            Strona <span></span> z <span></span>
                         </span>
 
                         <a th:href="@{/public/profile/{id}(id=${profileUser.id}, page=${currentPage + 1}, size=${pageSize})}"
                             class="pure-button pagination-button"
-                            th:classappend="${currentPage + 1 >= totalPages} ? 'pure-button-disabled'">Następna</a>
+                            th:classappend="${currentPage + 1 >= totalPages} ? 'pure-button-disabled'"
+                            th:text="#{public.view.pagination.next}">Następna</a>
                     </div>
 
                     <div>
                         <form th:action="@{/public/profile/{id}(id=${profileUser.id})}" method="get"
                             class="pagination-form">
-                            <label class="pagination-label">Na stronę:</label>
+                            <label class="pagination-label" th:text="#{public.view.pagination.per_page}">Na
+                                stronę:</label>
                             <select name="size" onchange="this.form.submit()" class="pagination-select">
                                 <option th:value="25" th:selected="${pageSize == 25}">25</option>
                                 <option th:value="50" th:selected="${pageSize == 50}">50</option>
@@ -119,8 +125,9 @@
 
         <script th:inline="javascript">
             /*<![CDATA[*/
-            const chartLabels = /*[[${chartLabels}]]*/ [];
-            const chartData = /*[[${chartData}]]*/ [];
+            const chartLabels = /*[[${chartLabels}]]*/[];
+            const chartData = /*[[${chartData}]]*/[];
+            const chartWeightLabel = /*[[#{chart.label.weight}]]*/ 'Waga (kg)';
             /*]]>*/
         </script>
 

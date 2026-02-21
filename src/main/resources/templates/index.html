@@ -6,21 +6,24 @@
 <body th:replace="~{base.html :: layout(~{::content})}">
     <div th:fragment="content">
         <div class="hero-section">
-            <h1 class="hero-title">Twoja waga pod kontrolą.</h1>
-            <p class="hero-subtitle">
+            <h1 class="hero-title" th:text="#{index.hero.cta.register}">Twoja waga pod kontrolą.</h1>
+            <p class="hero-subtitle" th:text="#{index.hero.subtitle}">
                 Proste, minimalistyczne narzędzie do śledzenia wagi i BMI, które pomoże Ci osiągnąć Twoje cele
                 zdrowotne.
             </p>
 
             <div sec:authorize="!isAuthenticated()">
-                <a href="/register" class="pure-button pure-button-primary hero-cta">Zacznij teraz — to darmowe</a>
+                <a href="/register" class="pure-button pure-button-primary hero-cta"
+                    th:text="#{index.hero.cta.register}">Zacznij teraz — to darmowe</a>
                 <p class="hero-login-text">
-                    Masz już konto? <a href="/login" class="hero-login-link">Zaloguj się</a>
+                    <span th:text="#{index.hero.login.text}">Masz już konto?</span> <a href="/login"
+                        class="hero-login-link" th:text="#{index.hero.login.link}">Zaloguj się</a>
                 </p>
             </div>
 
             <div sec:authorize="isAuthenticated()">
-                <a href="/profile" class="pure-button pure-button-primary hero-cta">Mój Dashboard</a>
+                <a href="/profile" class="pure-button pure-button-primary hero-cta"
+                    th:text="#{index.hero.cta.dashboard}">Mój Dashboard</a>
             </div>
         </div>
 
@@ -28,24 +31,24 @@
             <div class="pure-u-1 pure-u-md-1-3 feature-column">
                 <div class="card feature-card">
                     <div class="feature-icon">📊</div>
-                    <h3 class="feature-title">Statystyki</h3>
-                    <p class="feature-description">Śledź swoją wagę i BMI na
+                    <h3 class="feature-title" th:text="#{index.features.stats.title}">Statystyki</h3>
+                    <p class="feature-description" th:text="#{index.features.stats.desc}">Śledź swoją wagę i BMI na
                         interaktywnych wykresach aktualizowanych w czasie rzeczywistym.</p>
                 </div>
             </div>
             <div class="pure-u-1 pure-u-md-1-3 feature-column">
                 <div class="card feature-card">
                     <div class="feature-icon">📱</div>
-                    <h3 class="feature-title">Mobilność</h3>
-                    <p class="feature-description">Zaprojektowane z myślą o
+                    <h3 class="feature-title" th:text="#{index.features.mobile.title}">Mobilność</h3>
+                    <p class="feature-description" th:text="#{index.features.mobile.desc}">Zaprojektowane z myślą o
                         telefonach. Dodawaj wagę szybko i wygodnie, gdziekolwiek jesteś.</p>
                 </div>
             </div>
             <div class="pure-u-1 pure-u-md-1-3 feature-column">
                 <div class="card feature-card">
                     <div class="feature-icon">🔒</div>
-                    <h3 class="feature-title">Prywatność</h3>
-                    <p class="feature-description">Twoje dane są u nas
+                    <h3 class="feature-title" th:text="#{index.features.privacy.title}">Prywatność</h3>
+                    <p class="feature-description" th:text="#{index.features.privacy.desc}">Twoje dane są u nas
                         bezpieczne. Udostępnij swój profil publicznie tylko jeśli sam o tym zdecydujesz.</p>
                 </div>
             </div>

@@ -6,8 +6,9 @@
 <body th:replace="~{base.html :: layout(~{::content})}">
     <div th:fragment="content">
         <div class="page-header">
-            <h1>Społeczność</h1>
-            <p class="page-subtitle">Przeglądaj profile innych użytkowników i czerp inspirację.</p>
+            <h1 th:text="#{public.title}">Społeczność</h1>
+            <p class="page-subtitle" th:text="#{public.subtitle}">Przeglądaj profile innych użytkowników i czerp
+                inspirację.</p>
         </div>
 
         <div th:if="${profiles != null and !profiles.empty}" class="pure-g">
@@ -25,7 +26,8 @@
 
                         <div th:if="${dto.user.achievement != null and dto.user.achievement != ''}"
                             class="profile-achievement-section">
-                            <strong class="achievement-label">Osiągnięcia:</strong>
+                            <strong class="achievement-label"
+                                th:text="#{public.card.achievements}">Osiągnięcia:</strong>
                             <p class="achievement-text" th:text="${dto.user.achievement}"></p>
                         </div>
                     </div>
@@ -33,24 +35,25 @@
                     <div class="profile-stats">
                         <div class="pure-g profile-stats-grid">
                             <div class="pure-u-1-3">
-                                <span class="profile-stat-label">Wzrost</span>
+                                <span class="profile-stat-label" th:text="#{public.card.height}">Wzrost</span>
                                 <div class="profile-stat-value"
                                     th:text="${dto.user.height != null ? dto.user.height + ' cm' : '-'}"></div>
                             </div>
                             <div class="pure-u-1-3">
-                                <span class="profile-stat-label">Waga</span>
+                                <span class="profile-stat-label" th:text="#{public.card.weight}">Waga</span>
                                 <div class="profile-stat-value"
                                     th:text="${dto.currentWeight != null ? dto.currentWeight + ' kg' : '-'}"></div>
                             </div>
                             <div class="pure-u-1-3">
-                                <span class="profile-stat-label">BMI</span>
+                                <span class="profile-stat-label" th:text="#{public.card.bmi}">BMI</span>
                                 <div class="profile-stat-value-accent"
                                     th:text="${dto.currentBMI != null ? #numbers.formatDecimal(dto.currentBMI, 1, 1) : '-'}">
                                 </div>
                             </div>
                         </div>
                         <div style="text-align: center;">
-                            <a th:href="@{/public/profile/{id}(id=${dto.user.id})}" class="pure-button profile-view-btn">Zobacz pełny profil</a>
+                            <a th:href="@{/public/profile/{id}(id=${dto.user.id})}" class="pure-button profile-view-btn"
+                                th:text="#{public.card.view}">Zobacz pełny profil</a>
                         </div>
                     </div>
                 </div>
@@ -58,7 +61,7 @@
         </div>
 
         <div th:if="${profiles == null or profiles.empty}" class="card empty-state">
-            <p class="page-subtitle">Brak publicznych profili.</p>
+            <p class="page-subtitle" th:text="#{public.empty}">Brak publicznych profili.</p>
         </div>
     </div>
 </body>

@@ -11,6 +11,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.List;
@@ -45,7 +46,8 @@ public class AdminController {
 
         List<BmiUser> allBmiUsers = userService.getUserRepository().findAll();
 
-        // Prepare data for the chart - handle null BMIs by converting them to 0 or omitting
+        // Prepare data for the chart - handle null BMIs by converting them to 0 or
+        // omitting
         List<String> usernames = allBmiUsers.stream().map(BmiUser::getUsername).collect(Collectors.toList());
         List<Double> currentBMIs = allBmiUsers.stream()
                 .map(user -> {
@@ -91,22 +93,40 @@ public class AdminController {
     }
 
     @GetMapping("/user/block/{userId}")
-    public String blockUser(@PathVariable Long userId) {
-        BmiUser user = userService.getUserById(userId);
-        if (user != null) {
-            user.setIsBlocked(true);
-            userService.getUserRepository().save(user);
-        }
-        return "redirect:/admin/user/" + userId;
+    public String blockUser(@PathVariable Long userId, Authentication authentication) {
+        userService.findByUsername(authentication.getName()).ifPresent(currentUser -> {
+            if (!currentUser.getId().equals(userId)) {
+                BmiUser user = userService.getUserById(userId);
+                if (user != null) {
+                    user.setIsBlocked(true);
+                    userService.getUserRepository().save(user);
+                }
+            }
+        });
+        return "redirect:/admin/dashboard";
     }
 
     @GetMapping("/user/unblock/{userId}")
-    public String unblockUser(@PathVariable Long userId) {
-        BmiUser user = userService.getUserById(userId);
-        if (user != null) {
-            user.setIsBlocked(false);
-            userService.getUserRepository().save(user);
-        }
-        return "redirect:/admin/user/" + userId;
+    public String unblockUser(@PathVariable Long userId, Authentication authentication) {
+        userService.findByUsername(authentication.getName()).ifPresent(currentUser -> {
+            if (!currentUser.getId().equals(userId)) {
+                BmiUser user = userService.getUserById(userId);
+                if (user != null) {
+                    user.setIsBlocked(false);
+                    userService.getUserRepository().save(user);
+                }
+            }
+        });
+        return "redirect:/admin/dashboard";
+    }
+
+    @PostMapping("/user/delete/{userId}")
+    public String deleteUser(@PathVariable Long userId, Authentication authentication) {
+        userService.findByUsername(authentication.getName()).ifPresent(currentUser -> {
+            if (!currentUser.getId().equals(userId)) {
+                userService.deleteUser(userId);
+            }
+        });
+        return "redirect:/admin/dashboard";
     }
 }

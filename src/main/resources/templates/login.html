@@ -6,21 +6,32 @@
 <body th:replace="~{base.html :: layout(~{::content})}">
     <div th:fragment="content">
         <div class="card auth-card">
-            <h2>Zaloguj się</h2>
+            <h2 th:text="#{auth.login.title}">Zaloguj się</h2>
             <div th:if="${param.error}" class="pure-alert pure-alert-error auth-error">
-                Nieprawidłowy login lub hasło.
+                <span
+                    th:if="${session.SPRING_SECURITY_LAST_EXCEPTION != null and (session.SPRING_SECURITY_LAST_EXCEPTION.message.contains('disabled') or session.SPRING_SECURITY_LAST_EXCEPTION.message.contains('locked'))}"
+                    th:text="#{auth.login.error.locked}">
+                    Twoje konto zostało zablokowane. Skontaktuj się z administratorem.
+                </span>
+                <span
+                    th:unless="${session.SPRING_SECURITY_LAST_EXCEPTION != null and (session.SPRING_SECURITY_LAST_EXCEPTION.message.contains('disabled') or session.SPRING_SECURITY_LAST_EXCEPTION.message.contains('locked'))}"
+                    th:text="#{auth.login.error.invalid}">
+                    Nieprawidłowy login lub hasło.
+                </span>
             </div>
             <form th:action="@{/login}" method="post" class="pure-form pure-form-stacked">
-                <label for="username">Użytkownik</label>
+                <label for="username" th:text="#{auth.login.username}">Użytkownik</label>
                 <input type="text" id="username" name="username" required autofocus>
 
-                <label for="password">Hasło</label>
+                <label for="password" th:text="#{auth.login.password}">Hasło</label>
                 <input type="password" id="password" name="password" required>
 
-                <button type="submit" class="pure-button pure-button-primary auth-submit-btn">Zaloguj</button>
+                <button type="submit" class="pure-button pure-button-primary auth-submit-btn"
+                    th:text="#{auth.login.submit}">Zaloguj</button>
             </form>
             <p class="auth-footer-text">
-                Nie masz konta? <a href="/register" class="auth-link">Zarejestruj się</a>
+                <span th:text="#{auth.login.no_account}">Nie masz konta?</span> <a href="/register" class="auth-link"
+                    th:text="#{auth.login.register_link}">Zarejestruj się</a>
             </p>
         </div>
     </div>

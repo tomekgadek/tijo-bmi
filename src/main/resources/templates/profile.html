@@ -7,37 +7,41 @@
     <div th:fragment="content">
         <!-- Profile Completion Alert -->
         <div th:if="${user.height == null or user.firstName == null}" class="card profile-alert">
-            <h3>Uzupełnij swój profil</h3>
-            <p class="profile-alert-text">Dodaj swój wzrost i imię, abyśmy mogli obliczyć Twoje BMI.</p>
+            <h3 th:text="#{profile.alert.title}">Uzupełnij swój profil</h3>
+            <p class="profile-alert-text" th:text="#{profile.alert.text}">Dodaj swój wzrost i imię, abyśmy mogli
+                obliczyć Twoje BMI.</p>
             <button class="pure-button"
-                onclick="document.getElementById('profile-edit').scrollIntoView({behavior: 'smooth'})">Uzupełnij
+                onclick="document.getElementById('profile-edit').scrollIntoView({behavior: 'smooth'})"
+                th:text="#{profile.alert.button}">Uzupełnij
                 teraz</button>
         </div>
 
         <!-- Quick Stats Header -->
         <div class="pure-g">
             <div class="pure-u-1 pure-u-md-1-2">
-                <h1 th:text="'Profil: ' + ${user.username}">Cześć</h1>
+                <h1 th:text="#{profile.title(${user.username})}">Cześć</h1>
             </div>
             <div class="pure-u-1 pure-u-md-1-2 profile-status">
-                <p class="profile-status-text">Status profilu: <span
-                        th:text="${user.isPublic ? 'Publiczny' : 'Prywatny'}" class="profile-status-value"></span></p>
+                <p class="profile-status-text"><span th:text="#{profile.status.label}">Status profilu:</span> <span
+                        th:text="${user.isPublic ? #messages.msg('profile.status.public') : #messages.msg('profile.status.private')}"
+                        class="profile-status-value"></span></p>
             </div>
         </div>
 
         <div class="pure-g stats-grid">
             <div class="pure-u-1-2 pure-u-md-1-4 profile-edit-half-right">
                 <div class="card stat-card">
-                    <span class="stat-label">BMI</span>
+                    <span class="stat-label" th:text="#{profile.stats.bmi}">BMI</span>
                     <div id="stat-bmi" class="stat-value"
                         th:text="${stats != null and stats.currentBMI != null ? #numbers.formatDecimal(stats.currentBMI, 1, 'POINT', 1, 'POINT') : '-'}">
                         -</div>
-                    <span id="stat-category" class="stat-category" th:text="${stats != null ? stats.category : ''}"></span>
+                    <span id="stat-category" class="stat-category"
+                        th:text="${stats != null ? stats.category : ''}"></span>
                 </div>
             </div>
             <div class="pure-u-1-2 pure-u-md-1-4 profile-edit-half-left">
                 <div class="card stat-card">
-                    <span class="stat-label">Waga</span>
+                    <span class="stat-label" th:text="#{profile.stats.weight}">Waga</span>
                     <div id="stat-weight" class="stat-value"
                         th:text="${weightHistory != null and !weightHistory.empty ? weightHistory[0].weight : '-'}">-
                     </div>
@@ -48,25 +52,26 @@
 
         <!-- Add Weight & Chart -->
         <div class="card">
-            <h3>Dodaj nową wagę</h3>
+            <h3 th:text="#{profile.weight.add.title}">Dodaj nową wagę</h3>
             <form id="weight-form" th:action="@{/profile/addWeight}" method="post" class="pure-form weight-form">
                 <div class="weight-form-field">
-                    <label class="weight-form-label">Waga (kg)</label>
+                    <label class="weight-form-label" th:text="#{profile.weight.add.label}">Waga (kg)</label>
                     <input type="number" name="weight" id="new-weight" step="0.1" placeholder="np. 75.5" required
                         class="weight-form-input">
                 </div>
                 <div class="weight-form-field-wide">
-                    <label class="weight-form-label">Data</label>
+                    <label class="weight-form-label" th:text="#{profile.weight.add.date}">Data</label>
                     <input type="date" name="recordDate" id="new-date"
                         th:value="${#temporals.format(#temporals.createNow(), 'yyyy-MM-dd')}" required
                         class="weight-form-input">
                 </div>
-                <button type="submit" class="pure-button pure-button-primary">Dodaj wpis</button>
+                <button type="submit" class="pure-button pure-button-primary"
+                    th:text="#{profile.weight.add.submit}">Dodaj wpis</button>
             </form>
         </div>
 
         <div class="card">
-            <h3>Postęp</h3>
+            <h3 th:text="#{profile.progress.title}">Postęp</h3>
             <div class="chart-container">
                 <canvas id="weight-chart"></canvas>
             </div>
@@ -78,15 +83,15 @@
 
         <!-- History (Collapsible) -->
         <details class="card history-details">
-            <summary class="history-summary">Historia pomiarów</summary>
+            <summary class="history-summary" th:text="#{profile.history.title}">Historia pomiarów</summary>
             <div class="history-content">
                 <table class="pure-table pure-table-horizontal history-table">
                     <thead>
                         <tr>
-                            <th>Data</th>
-                            <th>Waga</th>
-                            <th>BMI</th>
-                            <th class="history-actions">Akcje</th>
+                            <th th:text="#{profile.history.date}">Data</th>
+                            <th th:text="#{profile.history.weight}">Waga</th>
+                            <th th:text="#{profile.history.bmi}">BMI</th>
+                            <th class="history-actions" th:text="#{profile.history.actions}">Akcje</th>
                         </tr>
                     </thead>
                     <tbody id="history-body">
@@ -99,14 +104,16 @@
                                 th:text="${record.calculateBMI() != null ? #numbers.formatDecimal(record.calculateBMI(), 1, 'POINT', 1, 'POINT') : '-'}">
                             </td>
                             <td class="history-actions">
-                                <button type="button" class="pure-button history-edit-btn" th:data-weight="${record.weight}"
+                                <button type="button" class="pure-button history-edit-btn"
+                                    th:data-weight="${record.weight}"
                                     th:data-date="${#temporals.format(record.recordDate, 'yyyy-MM-dd')}"
-                                    onclick="loadRecordForEdit(this)">Edytuj</button>
+                                    onclick="loadRecordForEdit(this)" th:text="#{profile.history.edit}">Edytuj</button>
 
                                 <form th:action="@{/profile/delete-weight/{id}(id=${record.id})}" method="post"
                                     class="history-delete-form"
-                                    onsubmit="return confirm('Czy na pewno chcesz usunąć ten wpis?')">
-                                    <button type="submit" class="pure-button history-delete-btn">Usuń</button>
+                                    th:onsubmit="'return confirm(\'' + #{profile.history.confirm_delete} + '\')'">
+                                    <button type="submit" class="pure-button history-delete-btn"
+                                        th:text="#{profile.history.delete}">Usuń</button>
                                 </form>
                             </td>
                         </tr>
@@ -114,28 +121,33 @@
                 </table>
                 <!-- Pagination Controls -->
                 <div class="pagination-container">
-                    <div class="pagination-info">
-                        Pomiary <span th:text="${currentPage * pageSize + 1}"></span> -
-                        <span
-                            th:text="${(currentPage + 1) * pageSize > totalItems ? totalItems : (currentPage + 1) * pageSize}"></span>
-                        z <span th:text="${totalItems}"></span>
+                    <div class="pagination-info"
+                        th:text="#{profile.pagination.info(${currentPage * pageSize + 1}, ${(currentPage + 1) * pageSize > totalItems ? totalItems : (currentPage + 1) * pageSize}, ${totalItems})}">
+                        Pomiary <span></span> -
+                        <span></span>
+                        z <span></span>
                     </div>
 
                     <div class="pagination" th:if="${totalPages > 1}">
-                        <a th:href="@{/profile(page=${currentPage - 1}, size=${pageSize})}" class="pure-button pagination-button"
-                            th:classappend="${currentPage == 0} ? 'pure-button-disabled'">Poprzednia</a>
+                        <a th:href="@{/profile(page=${currentPage - 1}, size=${pageSize})}"
+                            class="pure-button pagination-button"
+                            th:classappend="${currentPage == 0} ? 'pure-button-disabled'"
+                            th:text="#{profile.pagination.prev}">Poprzednia</a>
 
-                        <span class="pagination-text">
-                            Strona <span th:text="${currentPage + 1}"></span> z <span th:text="${totalPages}"></span>
+                        <span class="pagination-text"
+                            th:text="#{profile.pagination.page(${currentPage + 1}, ${totalPages})}">
+                            Strona <span></span> z <span></span>
                         </span>
 
-                        <a th:href="@{/profile(page=${currentPage + 1}, size=${pageSize})}" class="pure-button pagination-button"
-                            th:classappend="${currentPage + 1 >= totalPages} ? 'pure-button-disabled'">Następna</a>
+                        <a th:href="@{/profile(page=${currentPage + 1}, size=${pageSize})}"
+                            class="pure-button pagination-button"
+                            th:classappend="${currentPage + 1 >= totalPages} ? 'pure-button-disabled'"
+                            th:text="#{profile.pagination.next}">Następna</a>
                     </div>
 
                     <div>
                         <form th:action="@{/profile/update-pagination}" method="post" class="pagination-form">
-                            <label class="pagination-label">Na stronę:</label>
+                            <label class="pagination-label" th:text="#{profile.pagination.per_page}">Na stronę:</label>
                             <select name="size" onchange="this.form.submit()" class="pagination-select">
                                 <option th:value="25" th:selected="${pageSize == 25}">25</option>
                                 <option th:value="50" th:selected="${pageSize == 50}">50</option>
@@ -149,43 +161,46 @@
 
         <!-- Settings / Profile Edit -->
         <div id="profile-edit" class="card profile-edit-section">
-            <h3>Ustawienia profilu</h3>
+            <h3 th:text="#{profile.settings.title}">Ustawienia profilu</h3>
             <form th:action="@{/profile/update}" method="post" class="pure-form pure-form-stacked">
                 <div class="pure-g">
                     <div class="pure-u-1 pure-u-md-1-2 profile-edit-half-right">
-                        <label for="firstName">Imię</label>
+                        <label for="firstName" th:text="#{profile.settings.firstname}">Imię</label>
                         <input type="text" id="firstName" name="firstName" th:value="${user.firstName}">
                     </div>
                     <div class="pure-u-1 pure-u-md-1-2">
-                        <label for="lastName">Nazwisko</label>
+                        <label for="lastName" th:text="#{profile.settings.lastname}">Nazwisko</label>
                         <input type="text" id="lastName" name="lastName" th:value="${user.lastName}">
                     </div>
                     <div class="pure-u-1 pure-u-md-1-2 profile-edit-half-right">
-                        <label for="height">Wzrost (cm)</label>
+                        <label for="height" th:text="#{profile.settings.height}">Wzrost (cm)</label>
                         <input type="number" id="height" name="height" step="0.1" th:value="${user.height}">
                     </div>
                 </div>
 
-                <label for="motivationalQuote">Cytat motywacyjny</label>
+                <label for="motivationalQuote" th:text="#{profile.settings.quote}">Cytat motywacyjny</label>
                 <textarea id="motivationalQuote" name="motivationalQuote" th:text="${user.motivationalQuote}"
                     rows="2"></textarea>
 
-                <label for="achievement">Historia / Cele</label>
+                <label for="achievement" th:text="#{profile.settings.achievements}">Historia / Cele</label>
                 <textarea id="achievement" name="achievement" th:text="${user.achievement}" rows="2"></textarea>
 
                 <label for="isPublic" class="pure-checkbox profile-checkbox-label">
-                    <input type="checkbox" id="isPublic" name="isPublic" th:checked="${user.isPublic}"> Publiczny profil
+                    <input type="checkbox" id="isPublic" name="isPublic" th:checked="${user.isPublic}"> <span
+                        th:text="#{profile.settings.public}">Publiczny profil</span>
                 </label>
 
-                <button type="submit" class="pure-button profile-save-btn">Zapisz profil</button>
+                <button type="submit" class="pure-button profile-save-btn" th:text="#{profile.settings.save}">Zapisz
+                    profil</button>
             </form>
         </div>
 
         <script th:inline="javascript">
             /*<![CDATA[*/
             const userId = /*[[${user.id}]]*/ 0;
-            const chartLabels = /*[[${chartLabels}]]*/ [];
-            const chartData = /*[[${chartData}]]*/ [];
+            const chartLabels = /*[[${chartLabels}]]*/[];
+            const chartData = /*[[${chartData}]]*/[];
+            const chartWeightLabel = /*[[#{chart.label.weight}]]*/ 'Waga (kg)';
             /*]]>*/
         </script>
 

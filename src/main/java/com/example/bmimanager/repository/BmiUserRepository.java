@@ -10,5 +10,8 @@ import java.util.Optional;
 @Repository
 public interface BmiUserRepository extends JpaRepository<BmiUser, Long> {
     Optional<BmiUser> findByUsername(String username);
+
     List<BmiUser> findByIsPublicTrue();
+
+    List<BmiUser> findByIsPublicTrueAndIsBlockedFalse();
 }

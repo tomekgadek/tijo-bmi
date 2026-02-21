@@ -6,46 +6,49 @@
 <body th:replace="base.html :: layout(~{::content})">
     <div th:fragment="content">
         <div class="page-header">
-            <a href="/admin/dashboard" class="back-link">&larr; Powrót do panelu</a>
-            <h1 th:text="'Szczegóły: ' + ${user.username}">Szczegóły</h1>
+            <a href="/admin/dashboard" class="back-link" th:text="#{admin.user.details.back}">&larr; Powrót do
+                panelu</a>
+            <h1 th:text="#{admin.user.details.title(${user.username})}">Szczegóły</h1>
         </div>
 
         <div class="pure-g">
             <div class="pure-u-1 pure-u-md-1-2 user-detail-grid">
                 <div class="card">
-                    <h3>Dane użytkownika</h3>
-                    <p><strong>Imię i nazwisko:</strong> <span
-                            th:text="${user.firstName != null ? user.firstName + ' ' + user.lastName : '-'}"></span></p>
-                    <p><strong>Wzrost:</strong> <span
+                    <h3 th:text="#{admin.user.details.info}">Dane użytkownika</h3>
+                    <p><strong th:text="#{admin.user.details.name}">Imię i nazwisko:</strong> <span
+                            th:text="${user.firstName != null ? user.firstName + ' ' + (user.lastName != null ? user.lastName : '') : '-'}"></span>
+                    </p>
+                    <p><strong th:text="#{admin.user.details.height}">Wzrost:</strong> <span
                             th:text="${user.height != null ? user.height + ' cm' : '-'}"></span></p>
-                    <p><strong>Status:</strong> <span th:text="${user.isPublic ? 'Publiczny' : 'Prywatny'}"></span></p>
-                    <p><strong>Utworzono:</strong> <span
+                    <p><strong th:text="#{admin.user.details.status}">Status:</strong> <span
+                            th:text="${user.isPublic ? #messages.msg('admin.user.details.public') : #messages.msg('admin.user.details.private')}"></span>
+                    </p>
+                    <p><strong th:text="#{admin.user.details.created}">Utworzono:</strong> <span
                             th:text="${user.createdAt != null ? #temporals.format(user.createdAt, 'dd.MM.yyyy HH:mm') : '-'}"></span>
                     </p>
                 </div>
             </div>
             <div class="pure-u-1 pure-u-md-1-2 user-detail-grid">
                 <div class="card">
-                    <h3>Osiągnięcia i Cele</h3>
+                    <h3 th:text="#{admin.user.details.achievements}">Osiągnięcia i Cele</h3>
                     <p
-                        th:text="${user.achievement != null and user.achievement != '' ? user.achievement : 'Brak danych.'}">
+                        th:text="${user.achievement != null and user.achievement != '' ? user.achievement : #messages.msg('admin.user.details.no_data')}">
                     </p>
-                    <div th:if="${user.motivationalQuote != null and user.motivationalQuote != ''}"
-                        class="user-quote">
-                        <span th:text="'&quot;' + user.motivationalQuote + '&quot;'"></span>
+                    <div th:if="${user.motivationalQuote != null and user.motivationalQuote != ''}" class="user-quote">
+                        <span th:text="${'&quot;' + user.motivationalQuote + '&quot;'}"></span>
                     </div>
                 </div>
             </div>
         </div>
 
         <div class="card">
-            <h3>Historia wag</h3>
+            <h3 th:text="#{admin.user.details.history}">Historia wag</h3>
             <table class="pure-table pure-table-horizontal history-table">
                 <thead>
                     <tr>
-                        <th>Data</th>
-                        <th>Waga</th>
-                        <th>BMI</th>
+                        <th th:text="#{profile.history.date}">Data</th>
+                        <th th:text="#{profile.history.weight}">Waga</th>
+                        <th th:text="#{profile.history.bmi}">BMI</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -62,18 +65,26 @@
             </table>
         </div>
 
-        <div class="card danger-zone">
-            <h3 class="danger-zone-title">Strefa niebezpieczna</h3>
-            <p class="danger-zone-subtitle">Zarządzaj dostępem użytkownika.</p>
+        <div class="card danger-zone" th:with="currentUser=${#authentication.name}">
+            <h3 class="danger-zone-title" th:text="#{admin.user.details.danger_zone}">Strefa niebezpieczna</h3>
+            <p class="danger-zone-subtitle" th:text="#{admin.user.details.danger_zone_subtitle}">Zarządzaj dostępem
+                użytkownika.</p>
 
-            <div class="danger-zone-actions">
-                <a th:if="${!user.isBlocked}" th:href="@{/admin/user/block/{id}(id=${user.id})}" class="pure-button block-btn">Blokuj użytkownika</a>
-                <a th:if="${user.isBlocked}" th:href="@{/admin/user/unblock/{id}(id=${user.id})}" class="pure-button unblock-btn">Odblokuj użytkownika</a>
+            <div class="danger-zone-actions" th:if="${user.username != currentUser}">
+                <a th:if="${!user.isBlocked}" th:href="@{/admin/user/block/{id}(id=${user.id})}"
+                    class="pure-button block-btn" th:text="#{admin.actions.block}">Blokuj użytkownika</a>
+                <a th:if="${user.isBlocked}" th:href="@{/admin/user/unblock/{id}(id=${user.id})}"
+                    class="pure-button unblock-btn" th:text="#{admin.actions.unblock}">Odblokuj użytkownika</a>
 
                 <form th:action="@{/admin/user/delete/{id}(id=${user.id})}" method="post"
-                    onsubmit="return confirm('Czy na pewno chcesz usunąć tego użytkownika?')">
-                    <button type="submit" class="pure-button delete-btn">Usuń użytkownika</button>
+                    th:onsubmit="'return confirm(\'' + #{admin.confirm.delete} + '\')'">
+                    <button type="submit" class="pure-button delete-btn" th:text="#{admin.actions.delete}">Usuń
+                        użytkownika</button>
                 </form>
+            </div>
+            <div class="danger-zone-actions" th:unless="${user.username != currentUser}">
+                <p style="color:var(--text-secondary); font-style: italic;">Nie możesz zablokować ani usunąć własnego
+                    konta.</p>
             </div>
         </div>
     </div>

@@ -55,7 +55,7 @@ public class PublicProfileController {
             Model model) {
         BmiUser bmiUser = userService.getUserById(userId);
 
-        if (bmiUser == null || !bmiUser.getIsPublic()) {
+        if (bmiUser == null || !bmiUser.getIsPublic() || bmiUser.getIsBlocked()) {
             return "redirect:/public/profiles";
         }
 

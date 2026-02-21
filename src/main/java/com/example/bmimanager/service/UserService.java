@@ -43,7 +43,7 @@ public class UserService {
     }
 
     public BmiUser updateUser(Long userId, String firstName, String lastName, Double height, Boolean isPublic,
-                              String motivationalQuote, String achievement) {
+            String motivationalQuote, String achievement) {
         BmiUser user = getUserById(userId);
         if (user == null) {
             // TODO: pasuje wydzielić te komunukaty do zewnętrznego pliku
@@ -65,7 +65,7 @@ public class UserService {
     }
 
     public List<BmiUser> getPublicProfiles() {
-        return bmiUserRepository.findByIsPublicTrue();
+        return bmiUserRepository.findByIsPublicTrueAndIsBlockedFalse();
     }
 
     public BmiUserRepository getUserRepository() {

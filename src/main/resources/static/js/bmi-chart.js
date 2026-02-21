@@ -22,7 +22,7 @@ function initChart() {
     const data = {
         labels: typeof chartLabels !== 'undefined' ? chartLabels : [],
         datasets: [{
-            label: 'Waga (kg)',
+            label: typeof chartWeightLabel !== 'undefined' ? chartWeightLabel : 'Waga (kg)',
             data: typeof chartData !== 'undefined' ? chartData : [],
             borderColor: '#0984e3',
             backgroundColor: 'rgba(9, 132, 227, 0.1)',
@@ -48,6 +48,6 @@ function initChart() {
 }
 
 // Uruchomienie po załadowaniu DOM
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     initChart();
 });
