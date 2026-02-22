@@ -59,27 +59,6 @@
         <div class="card" th:if="${weightHistory != null and !weightHistory.empty}">
             <h3 th:text="#{public.view.history}">Historia pomiarów</h3>
             <div class="table-container">
-                <table class="pure-table pure-table-horizontal table-full">
-                    <thead>
-                        <tr>
-                            <th class="table-header-subtle" th:text="#{public.view.table.date}">Data</th>
-                            <th class="table-header-subtle" th:text="#{public.view.table.weight}">Waga</th>
-                            <th class="table-header-subtle" th:text="#{public.view.table.bmi}">BMI</th>
-                        </tr>
-                    </thead>
-                    <tbody id="public-history-body">
-                        <tr th:each="record : ${weightHistory}" th:data-record-id="${record.id}">
-                            <td
-                                th:text="${record.recordDate != null ? #temporals.format(record.recordDate, 'dd.MM.yyyy') : '-'}">
-                            </td>
-                            <td th:text="${record.weight} + ' kg'"></td>
-                            <td
-                                th:text="${record.calculateBMI() != null ? #numbers.formatDecimal(record.calculateBMI(), 1, 'POINT', 1, 'POINT') : '-'}">
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-
                 <div class="pagination-container">
                     <div class="pagination-info"
                         th:text="#{public.view.pagination.info(${currentPage * pageSize + 1}, ${(currentPage + 1) * pageSize > totalItems ? totalItems : (currentPage + 1) * pageSize}, ${totalItems})}">

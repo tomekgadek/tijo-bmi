@@ -412,8 +412,6 @@
     padding-top: 1rem;
 }
 
-.table-container {
-}
 
 .table-full {
     width: 100%;
@@ -426,6 +424,11 @@
 }
 
 /* === Admin Dashboard === */
+.admin-grid-offset {
+    margin-left: -0.5rem;
+    margin-right: -0.5rem;
+}
+
 .stats-grid {
     margin-bottom: 2rem;
 }
@@ -495,8 +498,25 @@
     background-color: #e74c3c;
 }
 
-.admin-action-btn {
-    font-size: 0.7rem;
+.admin-actions-cell {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.admin-action-btn,
+.block-btn,
+.unblock-btn,
+.delete-btn {
+    font-size: 0.75rem;
+    padding: 0.4rem 0.8rem;
+    min-width: 80px;
+    height: 32px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    margin: 0 !important;
 }
 
 /* === Admin User Details === */
@@ -536,6 +556,29 @@
 .delete-btn {
     background-color: #d63031;
     color: white;
+}
+
+/* Response for Admin Mobile */
+@media (max-width: 600px) {
+
+    .danger-zone-actions,
+    .admin-actions-cell {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .admin-action-btn,
+    .block-btn,
+    .unblock-btn,
+    .delete-btn {
+        width: 100%;
+        height: 40px;
+        font-size: 0.9rem;
+    }
+
+    .delete-btn form {
+        width: 100%;
+    }
 }
 
 .user-quote {

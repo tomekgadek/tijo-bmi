@@ -11,9 +11,9 @@
             <h1 th:text="#{admin.user.details.title(${user.username})}">Szczegóły</h1>
         </div>
 
-        <div class="pure-g">
+        <div class="pure-g admin-grid-offset">
             <div class="pure-u-1 pure-u-md-1-2 user-detail-grid">
-                <div class="card">
+                <div class="card card-full-height">
                     <h3 th:text="#{admin.user.details.info}">Dane użytkownika</h3>
                     <p><strong th:text="#{admin.user.details.name}">Imię i nazwisko:</strong> <span
                             th:text="${user.firstName != null ? user.firstName + ' ' + (user.lastName != null ? user.lastName : '') : '-'}"></span>
@@ -29,7 +29,7 @@
                 </div>
             </div>
             <div class="pure-u-1 pure-u-md-1-2 user-detail-grid">
-                <div class="card">
+                <div class="card card-full-height">
                     <h3 th:text="#{admin.user.details.achievements}">Osiągnięcia i Cele</h3>
                     <p
                         th:text="${user.achievement != null and user.achievement != '' ? user.achievement : #messages.msg('admin.user.details.no_data')}">
@@ -43,26 +43,46 @@
 
         <div class="card">
             <h3 th:text="#{admin.user.details.history}">Historia wag</h3>
-            <table class="pure-table pure-table-horizontal history-table">
-                <thead>
-                    <tr>
-                        <th th:text="#{profile.history.date}">Data</th>
-                        <th th:text="#{profile.history.weight}">Waga</th>
-                        <th th:text="#{profile.history.bmi}">BMI</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr th:each="record : ${weightHistory}">
-                        <td
-                            th:text="${record.recordDate != null ? #temporals.format(record.recordDate, 'dd.MM.yyyy') : '-'}">
-                        </td>
-                        <td th:text="${record.weight} + ' kg'"></td>
-                        <td
-                            th:text="${record.calculateBMI() != null ? #numbers.formatDecimal(record.calculateBMI(), 1, 1) : '-'}">
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
+            <div class="chart-container">
+                <canvas id="weight-chart"></canvas>
+            </div>
+
+            <!-- Pagination Controls -->
+            <div class="pagination-container" th:if="${totalItems > 0}">
+                <div class="pagination-info"
+                    th:text="#{profile.pagination.info(${currentPage * pageSize + 1}, ${(currentPage + 1) * pageSize > totalItems ? totalItems : (currentPage + 1) * pageSize}, ${totalItems})}">
+                    Pomiary <span></span> - <span></span> z <span></span>
+                </div>
+
+                <div class="pagination" th:if="${totalPages > 1}">
+                    <a th:href="@{/admin/user/{id}(id=${user.id}, page=${currentPage - 1}, size=${pageSize})}"
+                        class="pure-button pagination-button"
+                        th:classappend="${currentPage == 0} ? 'pure-button-disabled'"
+                        th:text="#{profile.pagination.prev}">Poprzednia</a>
+
+                    <span class="pagination-text"
+                        th:text="#{profile.pagination.page(${currentPage + 1}, ${totalPages})}">
+                        Strona <span></span> z <span></span>
+                    </span>
+
+                    <a th:href="@{/admin/user/{id}(id=${user.id}, page=${currentPage + 1}, size=${pageSize})}"
+                        class="pure-button pagination-button"
+                        th:classappend="${currentPage + 1 >= totalPages} ? 'pure-button-disabled'"
+                        th:text="#{profile.pagination.next}">Następna</a>
+                </div>
+
+                <div>
+                    <form th:action="@{/admin/user/{id}(id=${user.id})}" method="get" class="pagination-form">
+                        <label class="pagination-label" th:text="#{profile.pagination.per_page}">Na stronę:</label>
+                        <select name="size" onchange="this.form.submit()" class="pagination-select">
+                            <option th:value="10" th:selected="${pageSize == 10}">10</option>
+                            <option th:value="25" th:selected="${pageSize == 25}">25</option>
+                            <option th:value="50" th:selected="${pageSize == 50}">50</option>
+                        </select>
+                        <input type="hidden" name="page" th:value="0">
+                    </form>
+                </div>
+            </div>
         </div>
 
         <div class="card danger-zone" th:with="currentUser=${#authentication.name}">
@@ -70,7 +90,7 @@
             <p class="danger-zone-subtitle" th:text="#{admin.user.details.danger_zone_subtitle}">Zarządzaj dostępem
                 użytkownika.</p>
 
-            <div class="danger-zone-actions" th:if="${user.username != currentUser}">
+            <div class="danger-zone-actions admin-actions-cell" th:if="${user.username != currentUser}">
                 <a th:if="${!user.isBlocked}" th:href="@{/admin/user/block/{id}(id=${user.id})}"
                     class="pure-button block-btn" th:text="#{admin.actions.block}">Blokuj użytkownika</a>
                 <a th:if="${user.isBlocked}" th:href="@{/admin/user/unblock/{id}(id=${user.id})}"
@@ -87,6 +107,15 @@
                     konta.</p>
             </div>
         </div>
+        <script th:inline="javascript">
+            /*<![CDATA[*/
+            const chartLabels = /*[[${chartLabels}]]*/[];
+            const chartData = /*[[${chartData}]]*/[];
+            const chartWeightLabel = /*[[#{chart.label.weight}]]*/ 'Waga (kg)';
+            /*]]>*/
+        </script>
+
+        <script th:src="@{/js/bmi-chart.js}"></script>
     </div>
 </body>
 

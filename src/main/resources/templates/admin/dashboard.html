@@ -12,7 +12,7 @@
         </div>
 
         <!-- Stats Grid -->
-        <div class="pure-g stats-grid">
+        <div class="pure-g stats-grid admin-grid-offset">
             <div class="pure-u-1 pure-u-md-1-3 stat-grid-item">
                 <div class="card stat-card-centered">
                     <span class="stat-card-label" th:text="#{admin.stats.users}">Użytkownicy</span>
@@ -61,20 +61,24 @@
                             <td th:text="${user.createdAt != null ? #temporals.format(user.createdAt, 'dd.MM') : '-'}">
                             </td>
                             <td th:with="currentUser=${#authentication.name}">
-                                <a th:href="@{/admin/user/{id}(id=${user.id})}" class="pure-button admin-action-btn"
-                                    th:text="#{admin.actions.details}">Szczegóły</a>
-                                <span th:if="${user.username != currentUser}">
-                                    <a th:if="${!user.isBlocked}" th:href="@{/admin/user/block/{id}(id=${user.id})}"
-                                        class="pure-button block-btn" th:text="#{admin.actions.block}">Blokuj</a>
-                                    <a th:if="${user.isBlocked}" th:href="@{/admin/user/unblock/{id}(id=${user.id})}"
-                                        class="pure-button unblock-btn" th:text="#{admin.actions.unblock}">Odblokuj</a>
-                                    <form th:action="@{/admin/user/delete/{id}(id=${user.id})}" method="post"
-                                        style="display:inline;"
-                                        th:onsubmit="'return confirm(\'' + #{admin.confirm.delete} + '\')'">
-                                        <button type="submit" class="pure-button delete-btn"
-                                            th:text="#{admin.actions.delete}">Usuń</button>
-                                    </form>
-                                </span>
+                                <div class="admin-actions-cell">
+                                    <a th:href="@{/admin/user/{id}(id=${user.id})}" class="pure-button admin-action-btn"
+                                        th:text="#{admin.actions.details}">Szczegóły</a>
+                                    <th:block th:if="${user.username != currentUser}">
+                                        <a th:if="${!user.isBlocked}" th:href="@{/admin/user/block/{id}(id=${user.id})}"
+                                            class="pure-button block-btn" th:text="#{admin.actions.block}">Blokuj</a>
+                                        <a th:if="${user.isBlocked}"
+                                            th:href="@{/admin/user/unblock/{id}(id=${user.id})}"
+                                            class="pure-button unblock-btn"
+                                            th:text="#{admin.actions.unblock}">Odblokuj</a>
+                                        <form th:action="@{/admin/user/delete/{id}(id=${user.id})}" method="post"
+                                            style="display:inline;"
+                                            th:onsubmit="'return confirm(\'' + #{admin.confirm.delete} + '\')'">
+                                            <button type="submit" class="pure-button delete-btn"
+                                                th:text="#{admin.actions.delete}">Usuń</button>
+                                        </form>
+                                    </th:block>
+                                </div>
                             </td>
                         </tr>
                     </tbody>

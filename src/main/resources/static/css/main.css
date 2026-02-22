@@ -88,6 +88,11 @@ footer {
     margin-bottom: 1rem;
 }
 
+.card-full-height {
+    height: 100%;
+    margin-bottom: 0;
+}
+
 .pure-g {
     letter-spacing: normal !important;
 }

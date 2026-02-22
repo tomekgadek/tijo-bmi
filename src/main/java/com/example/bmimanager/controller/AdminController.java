@@ -4,8 +4,8 @@ import com.example.bmimanager.entity.BmiUser;
 import com.example.bmimanager.entity.WeightRecord;
 import com.example.bmimanager.service.BMIFacadeService;
 import com.example.bmimanager.service.UserService;
-import com.example.bmimanager.service.WeightService;
 import org.slf4j.Logger;
+import org.springframework.data.domain.Page;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -24,12 +25,10 @@ public class AdminController {
     private final static Logger log = org.slf4j.LoggerFactory.getLogger(AdminController.class);
 
     private final UserService userService;
-    private final WeightService weightService;
     private final BMIFacadeService bmiFacadeService;
 
-    public AdminController(UserService userService, WeightService weightService, BMIFacadeService bmiFacadeService) {
+    public AdminController(UserService userService, BMIFacadeService bmiFacadeService) {
         this.userService = userService;
-        this.weightService = weightService;
         this.bmiFacadeService = bmiFacadeService;
     }
 
@@ -76,18 +75,41 @@ public class AdminController {
     }
 
     @GetMapping("/user/{userId}")
-    public String viewUserDetails(@PathVariable Long userId, Model model) {
+    public String viewUserDetails(
+            @PathVariable Long userId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            Model model) {
         BmiUser user = userService.getUserById(userId);
         if (user == null) {
             return "redirect:/admin/users";
         }
 
-        List<WeightRecord> weightHistory = weightService.getUserWeightRecords(user);
+        Page<WeightRecord> paginatedHistory = bmiFacadeService.getPaginatedUserWeightHistory(userId, page, size);
         BMIFacadeService.BMIStatistics stats = bmiFacadeService.getBMIStatistics(userId);
 
+        // Prepare chart data
+        List<WeightRecord> currentSlice = paginatedHistory.getContent();
+        List<WeightRecord> chronologicalSlice = currentSlice.stream()
+                .sorted(java.util.Comparator.comparing(WeightRecord::getRecordDate))
+                .toList();
+
+        List<String> chartLabels = chronologicalSlice.stream()
+                .map(r -> r.getRecordDate().toString())
+                .collect(Collectors.toList());
+        List<Double> chartData = chronologicalSlice.stream()
+                .map(WeightRecord::getWeight)
+                .collect(Collectors.toList());
+
         model.addAttribute("user", user);
-        model.addAttribute("weightHistory", weightHistory);
+        model.addAttribute("weightHistory", paginatedHistory.getContent());
         model.addAttribute("stats", stats);
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", paginatedHistory.getTotalPages());
+        model.addAttribute("totalItems", paginatedHistory.getTotalElements());
+        model.addAttribute("pageSize", size);
+        model.addAttribute("chartLabels", chartLabels);
+        model.addAttribute("chartData", chartData);
 
         return "admin/user-details";
     }
