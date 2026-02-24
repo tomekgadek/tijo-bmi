@@ -36,7 +36,7 @@
                         th:text="${stats != null and stats.currentBMI != null ? #numbers.formatDecimal(stats.currentBMI, 1, 'POINT', 1, 'POINT') : '-'}">
                         -</div>
                     <span id="stat-category" class="stat-category"
-                        th:text="${stats != null ? stats.category : ''}"></span>
+                        th:text="${stats != null and stats.category != null ? #messages.msg('bmi.category.' + stats.category.name().toLowerCase()) : ''}"></span>
                 </div>
             </div>
             <div class="pure-u-1-2 pure-u-md-1-4 profile-edit-half-left">

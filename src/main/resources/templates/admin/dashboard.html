@@ -58,7 +58,8 @@
                                 <span th:text="${user.isPublic ? 'Public' : 'Private'}"
                                     th:class="${user.isPublic ? 'status-badge status-badge-public' : 'status-badge status-badge-private'}"></span>
                             </td>
-                            <td th:text="${user.createdAt != null ? #temporals.format(user.createdAt, 'dd.MM') : '-'}">
+                            <td
+                                th:text="${user.createdAt != null ? #temporals.format(user.createdAt, 'dd.MM.yyyy') : '-'}">
                             </td>
                             <td th:with="currentUser=${#authentication.name}">
                                 <div class="admin-actions-cell">

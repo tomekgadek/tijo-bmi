@@ -2,6 +2,7 @@ package com.example.bmimanager.service;
 
 import com.example.bmimanager.entity.BmiUser;
 import com.example.bmimanager.entity.WeightRecord;
+import com.example.bmimanager.model.BMICategory;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
@@ -108,24 +109,23 @@ public class BMIFacadeService {
     /**
      * Zwraca kategorie BMI
      */
-    public String getBMICategory(Double bmi) {
-        // TODO: do zmiany, pasuje użyć enum
+    public BMICategory getBMICategory(Double bmi) {
         if (bmi == null || bmi == 0)
-            return "Brak danych";
+            return BMICategory.NO_DATA;
         if (bmi < 18.5)
-            return "Niedowaga";
+            return BMICategory.UNDERWEIGHT;
         if (bmi < 25)
-            return "Prawidłowa waga";
+            return BMICategory.NORMAL;
         if (bmi < 30)
-            return "Nadwaga";
-        return "Otyłość";
+            return BMICategory.OVERWEIGHT;
+        return BMICategory.OBESITY;
     }
 
     /**
      * Aktualizuje profil użytkownika
      */
     public BmiUser updateUserProfile(Long userId, String firstName, String lastName, Double height,
-                                     Boolean isPublic, String motivationalQuote, String achievement) {
+            Boolean isPublic, String motivationalQuote, String achievement) {
         return userService.updateUser(userId, firstName, lastName, height, isPublic, motivationalQuote, achievement);
     }
 
@@ -155,11 +155,11 @@ public class BMIFacadeService {
         public Double lowestWeight;
         public Double highestWeight;
         public Integer recordCount;
-        public String category;
+        public BMICategory category;
         public WeightRecord latestRecord;
 
         public BMIStatistics(Double currentWeight, Double currentBMI, Double lowestWeight, Double highestWeight,
-                Integer recordCount, String category, WeightRecord latestRecord) {
+                Integer recordCount, BMICategory category, WeightRecord latestRecord) {
             this.currentWeight = currentWeight;
             this.currentBMI = currentBMI;
             this.lowestWeight = lowestWeight;
@@ -193,7 +193,7 @@ public class BMIFacadeService {
             return recordCount;
         }
 
-        public String getCategory() {
+        public BMICategory getCategory() {
             return category;
         }
     }
