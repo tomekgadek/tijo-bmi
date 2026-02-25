@@ -21,7 +21,7 @@ public class WeightService {
     }
 
     public WeightRecord addWeightRecord(BmiUser bmiUser, Double weight) {
-        WeightRecord record =  WeightRecord.builder()
+        WeightRecord record = WeightRecord.builder()
                 .bmiUser(bmiUser)
                 .weight(weight)
                 .recordDate(LocalDate.now())
@@ -30,10 +30,10 @@ public class WeightService {
     }
 
     public WeightRecord addWeightRecord(BmiUser bmiUser, Double weight, LocalDate recordDate) {
-        WeightRecord record =  WeightRecord.builder()
+        WeightRecord record = WeightRecord.builder()
                 .bmiUser(bmiUser)
                 .weight(weight)
-                .recordDate(LocalDate.now())
+                .recordDate(recordDate)
                 .build();
         return weightRecordRepository.save(record);
     }
@@ -44,7 +44,7 @@ public class WeightService {
 
     public Page<WeightRecord> getPaginatedUserWeightRecords(BmiUser bmiUser, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
-        return weightRecordRepository.findByBmiUserOrderByRecordDateDesc(bmiUser, pageable);
+        return weightRecordRepository.findByBmiUserOrderByRecordDateAsc(bmiUser, pageable);
     }
 
     public List<WeightRecord> getUserWeightRecordsByDateRange(BmiUser bmiUser, LocalDate startDate, LocalDate endDate) {

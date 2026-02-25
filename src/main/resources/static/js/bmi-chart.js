@@ -42,6 +42,43 @@ function initChart() {
             },
             plugins: {
                 legend: { display: false }
+            },
+            onClick: (e) => {
+                if (!weightChart) return;
+
+                const points = weightChart.getElementsAtEventForMode(e, 'nearest', { intersect: true }, true);
+                if (points.length) {
+                    const firstPoint = points[0];
+                    const index = firstPoint.index;
+
+                    if (typeof chartRecordIds !== 'undefined' && chartRecordIds.length > index) {
+                        const recordId = chartRecordIds[index];
+                        const date = data.labels[index];
+                        const weight = data.datasets[0].data[index];
+
+                        // Populate modal inputs
+                        const editWeightInput = document.getElementById('edit-weight');
+                        const editDateDisplay = document.getElementById('edit-date-display');
+                        const editDateHidden = document.getElementById('edit-date-hidden');
+                        const editForm = document.getElementById('edit-weight-form');
+                        const deleteForm = document.getElementById('delete-weight-form');
+
+                        if (editWeightInput && deleteForm && editForm) {
+                            editWeightInput.value = weight;
+                            if (editDateDisplay) editDateDisplay.innerText = date;
+                            if (editDateHidden) editDateHidden.value = date;
+
+                            // Ensure the forms submit to the correct URLs
+                            editForm.action = '/profile/edit-weight/' + recordId;
+                            deleteForm.action = '/profile/delete-weight/' + recordId;
+
+                            // Open modal
+                            if (typeof openEditWeightModal === 'function') {
+                                openEditWeightModal();
+                            }
+                        }
+                    }
+                }
             }
         }
     });

@@ -13,7 +13,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
-import java.util.Comparator;
+
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -33,7 +33,7 @@ public class UserProfileController {
 
     @GetMapping
     public String viewProfile(
-            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(required = false) Integer page,
             @RequestParam(required = false) Integer size,
             Authentication authentication, Model model) {
         String username = authentication.getName();
@@ -45,22 +45,29 @@ public class UserProfileController {
 
         int pageSize = (size != null) ? size : bmiUser.getResultsPerPage();
 
+        // If page is not specified, redirect to the last page
+        if (page == null) {
+            Page<WeightRecord> firstPage = bmiFacadeService.getPaginatedUserWeightHistory(bmiUser.getId(), 0, pageSize);
+            int lastPage = Math.max(0, firstPage.getTotalPages() - 1);
+            return "redirect:/profile?page=" + lastPage;
+        }
+
         BMIFacadeService.BMIStatistics stats = bmiFacadeService.getBMIStatistics(bmiUser.getId());
         Page<WeightRecord> paginatedHistory = bmiFacadeService.getPaginatedUserWeightHistory(bmiUser.getId(), page,
                 pageSize);
 
         List<WeightRecord> currentSlice = paginatedHistory.getContent();
-        // Reverse for chart: table is newest-first, chart should be chronological
-        // (left-to-right)
-        List<WeightRecord> chronologicalSlice = currentSlice.stream()
-                .sorted(Comparator.comparing(WeightRecord::getRecordDate))
-                .toList();
+        // Since we fetch in ascending order, the current slice is already chronological
+        List<WeightRecord> chronologicalSlice = currentSlice;
 
         List<String> chartLabels = chronologicalSlice.stream()
                 .map(r -> r.getRecordDate().toString())
                 .collect(Collectors.toList());
         List<Double> chartData = chronologicalSlice.stream()
                 .map(WeightRecord::getWeight)
+                .collect(Collectors.toList());
+        List<Long> chartRecordIds = chronologicalSlice.stream()
+                .map(WeightRecord::getId)
                 .collect(Collectors.toList());
 
         model.addAttribute("user", bmiUser);
@@ -72,6 +79,7 @@ public class UserProfileController {
         model.addAttribute("pageSize", pageSize);
         model.addAttribute("chartLabels", chartLabels);
         model.addAttribute("chartData", chartData);
+        model.addAttribute("chartRecordIds", chartRecordIds);
 
         return "profile";
     }
@@ -88,6 +96,7 @@ public class UserProfileController {
 
     @PostMapping("/addWeight")
     public String addWeight(@RequestParam Double weight, @RequestParam(required = false) String recordDate,
+            @RequestParam(required = false) Integer page,
             Authentication authentication) {
 
         String username = authentication.getName();
@@ -105,7 +114,7 @@ public class UserProfileController {
             }
         }
 
-        return "redirect:/profile";
+        return page != null ? "redirect:/profile?page=" + page : "redirect:/profile";
     }
 
     @PostMapping("/update")
@@ -129,8 +138,23 @@ public class UserProfileController {
         return "redirect:/profile";
     }
 
+    @PostMapping("/edit-weight/{recordId}")
+    public String editWeightRecord(@PathVariable Long recordId, @RequestParam Double weight,
+            @RequestParam(required = false) Integer page, Authentication authentication) {
+
+        String username = authentication.getName();
+        BmiUser user = userService.findByUsername(username).orElse(null);
+
+        if (user != null) {
+            bmiFacadeService.updateWeightRecord(user.getId(), recordId, weight);
+        }
+
+        return page != null ? "redirect:/profile?page=" + page : "redirect:/profile";
+    }
+
     @PostMapping("/delete-weight/{recordId}")
-    public String deleteWeightRecord(@PathVariable Long recordId, Authentication authentication) {
+    public String deleteWeightRecord(@PathVariable Long recordId, @RequestParam(required = false) Integer page,
+            Authentication authentication) {
 
         String username = authentication.getName();
         BmiUser user = userService.findByUsername(username).orElse(null);
@@ -139,6 +163,6 @@ public class UserProfileController {
             bmiFacadeService.deleteWeightRecord(user.getId(), recordId);
         }
 
-        return "redirect:/profile";
+        return page != null ? "redirect:/profile?page=" + page : "redirect:/profile";
     }
 }

@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -50,7 +49,7 @@ public class PublicProfileController {
     @GetMapping("/profile/{userId}")
     public String viewUserProfile(
             @PathVariable Long userId,
-            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(required = false) Integer page,
             @RequestParam(defaultValue = "25") int size,
             Model model) {
         BmiUser bmiUser = userService.getUserById(userId);
@@ -59,20 +58,28 @@ public class PublicProfileController {
             return "redirect:/public/profiles";
         }
 
+        // If page is not specified, redirect to the last page
+        if (page == null) {
+            Page<WeightRecord> firstPage = bmiFacadeService.getPaginatedUserWeightHistory(userId, 0, size);
+            int lastPage = Math.max(0, firstPage.getTotalPages() - 1);
+            return "redirect:/public/profile/" + userId + "?page=" + lastPage;
+        }
+
         Page<WeightRecord> paginatedHistory = bmiFacadeService.getPaginatedUserWeightHistory(userId, page, size);
         BMIFacadeService.BMIStatistics stats = bmiFacadeService.getBMIStatistics(userId);
 
         // Przygotowanie danych do wygenerowania wykresu
         List<WeightRecord> currentSlice = paginatedHistory.getContent();
-        List<WeightRecord> chronologicalSlice = currentSlice.stream()
-                .sorted(Comparator.comparing(WeightRecord::getRecordDate))
-                .toList();
+        List<WeightRecord> chronologicalSlice = currentSlice;
 
         List<String> chartLabels = chronologicalSlice.stream()
                 .map(r -> r.getRecordDate().toString())
                 .collect(Collectors.toList());
         List<Double> chartData = chronologicalSlice.stream()
                 .map(WeightRecord::getWeight)
+                .collect(Collectors.toList());
+        List<Long> chartRecordIds = chronologicalSlice.stream()
+                .map(WeightRecord::getId)
                 .collect(Collectors.toList());
 
         model.addAttribute("profileUser", bmiUser);
@@ -84,6 +91,7 @@ public class PublicProfileController {
         model.addAttribute("stats", stats);
         model.addAttribute("chartLabels", chartLabels);
         model.addAttribute("chartData", chartData);
+        model.addAttribute("chartRecordIds", chartRecordIds);
 
         return "public-profile-view";
     }

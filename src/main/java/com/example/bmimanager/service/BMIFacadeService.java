@@ -147,6 +147,17 @@ public class BMIFacadeService {
     }
 
     /**
+     * Aktualizuje zapis wagi (tylko wagę, bez zmiany daty)
+     */
+    public WeightRecord updateWeightRecord(Long userId, Long recordId, Double weight) {
+        WeightRecord record = weightService.getWeightRecordById(recordId);
+        if (record != null && record.getBmiUser().getId().equals(userId)) {
+            return weightService.updateWeightRecord(recordId, weight, record.getRecordDate());
+        }
+        return null;
+    }
+
+    /**
      * Pomocna klasa do przechowywania statystyk BMI
      */
     public static class BMIStatistics {

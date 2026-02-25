@@ -57,48 +57,45 @@
             </div>
         </div>
 
-        <div class="card" th:if="${weightHistory != null and !weightHistory.empty}">
-            <h3 th:text="#{public.view.history}">Historia pomiarów</h3>
-            <div class="table-container">
-                <div class="pagination-container">
-                    <div class="pagination-info"
-                        th:text="#{public.view.pagination.info(${currentPage * pageSize + 1}, ${(currentPage + 1) * pageSize > totalItems ? totalItems : (currentPage + 1) * pageSize}, ${totalItems})}">
-                        Pomiary <span></span> -
-                        <span></span>
-                        z <span></span>
-                    </div>
+        <div class="card" th:if="${totalItems > 0}">
+            <div class="pagination-container">
+                <div class="pagination-info"
+                    th:text="#{public.view.pagination.info(${currentPage * pageSize + 1}, ${(currentPage + 1) * pageSize > totalItems ? totalItems : (currentPage + 1) * pageSize}, ${totalItems})}">
+                    Pomiary <span></span> -
+                    <span></span>
+                    z <span></span>
+                </div>
 
-                    <div class="pagination" th:if="${totalPages > 1}">
-                        <a th:href="@{/public/profile/{id}(id=${profileUser.id}, page=${currentPage - 1}, size=${pageSize})}"
-                            class="pure-button pagination-button"
-                            th:classappend="${currentPage == 0} ? 'pure-button-disabled'"
-                            th:text="#{public.view.pagination.prev}">Poprzednia</a>
+                <div class="pagination" th:if="${totalPages > 1}">
+                    <a th:href="@{/public/profile/{id}(id=${profileUser.id}, page=${currentPage - 1}, size=${pageSize})}"
+                        class="pure-button pagination-button"
+                        th:classappend="${currentPage == 0} ? 'pure-button-disabled'"
+                        th:text="#{public.view.pagination.prev}">Poprzednia</a>
 
-                        <span class="pagination-text"
-                            th:text="#{public.view.pagination.page(${currentPage + 1}, ${totalPages})}">
-                            Strona <span></span> z <span></span>
-                        </span>
+                    <span class="pagination-text"
+                        th:text="#{public.view.pagination.page(${currentPage + 1}, ${totalPages})}">
+                        Strona <span></span> z <span></span>
+                    </span>
 
-                        <a th:href="@{/public/profile/{id}(id=${profileUser.id}, page=${currentPage + 1}, size=${pageSize})}"
-                            class="pure-button pagination-button"
-                            th:classappend="${currentPage + 1 >= totalPages} ? 'pure-button-disabled'"
-                            th:text="#{public.view.pagination.next}">Następna</a>
-                    </div>
+                    <a th:href="@{/public/profile/{id}(id=${profileUser.id}, page=${currentPage + 1}, size=${pageSize})}"
+                        class="pure-button pagination-button"
+                        th:classappend="${currentPage + 1 >= totalPages} ? 'pure-button-disabled'"
+                        th:text="#{public.view.pagination.next}">Następna</a>
+                </div>
 
-                    <div>
-                        <form th:action="@{/public/profile/{id}(id=${profileUser.id})}" method="get"
-                            class="pagination-form">
-                            <label class="pagination-label" th:text="#{public.view.pagination.per_page}">Na
-                                stronę:</label>
-                            <select name="size" onchange="this.form.submit()" class="pagination-select">
-                                <option th:value="25" th:selected="${pageSize == 25}">25</option>
-                                <option th:value="50" th:selected="${pageSize == 50}">50</option>
-                                <option th:value="75" th:selected="${pageSize == 75}">75</option>
-                                <option th:value="100" th:selected="${pageSize == 100}">100</option>
-                            </select>
-                            <input type="hidden" name="page" th:value="0">
-                        </form>
-                    </div>
+                <div>
+                    <form th:action="@{/public/profile/{id}(id=${profileUser.id})}" method="get"
+                        class="pagination-form">
+                        <label class="pagination-label" th:text="#{public.view.pagination.per_page}">Na
+                            stronę:</label>
+                        <select name="size" onchange="this.form.submit()" class="pagination-select">
+                            <option th:value="25" th:selected="${pageSize == 25}">25</option>
+                            <option th:value="50" th:selected="${pageSize == 50}">50</option>
+                            <option th:value="75" th:selected="${pageSize == 75}">75</option>
+                            <option th:value="100" th:selected="${pageSize == 100}">100</option>
+                        </select>
+                        <input type="hidden" name="page" th:value="0">
+                    </form>
                 </div>
             </div>
         </div>
@@ -107,6 +104,7 @@
             /*<![CDATA[*/
             const chartLabels = /*[[${chartLabels}]]*/[];
             const chartData = /*[[${chartData}]]*/[];
+            const chartRecordIds = /*[[${chartRecordIds}]]*/[];
             const chartWeightLabel = /*[[#{chart.label.weight}]]*/ 'Waga (kg)';
             /*]]>*/
         </script>

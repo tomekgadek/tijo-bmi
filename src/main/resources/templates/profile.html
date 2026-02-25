@@ -52,28 +52,52 @@
 
         <!-- Add Weight & Chart -->
         <div class="card">
-            <h3 th:text="#{profile.weight.add.title}">Dodaj nową wagę</h3>
-            <form id="weight-form" th:action="@{/profile/addWeight}" method="post" class="pure-form weight-form">
-                <div class="weight-form-field">
-                    <label class="weight-form-label" th:text="#{profile.weight.add.label}">Waga (kg)</label>
-                    <input type="number" name="weight" id="new-weight" step="0.1" placeholder="np. 75.5" required
-                        class="weight-form-input">
-                </div>
-                <div class="weight-form-field-wide">
-                    <label class="weight-form-label" th:text="#{profile.weight.add.date}">Data</label>
-                    <input type="date" name="recordDate" id="new-date"
-                        th:value="${#temporals.format(#temporals.createNow(), 'yyyy-MM-dd')}" required
-                        class="weight-form-input">
-                </div>
-                <button type="submit" class="pure-button pure-button-primary"
-                    th:text="#{profile.weight.add.submit}">Dodaj wpis</button>
-            </form>
-        </div>
-
-        <div class="card">
-            <h3 th:text="#{profile.progress.title}">Postęp</h3>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                <h3 style="margin: 0;" th:text="#{profile.progress.title}">Postęp</h3>
+                <button type="button" class="pure-button pure-button-primary" onclick="openAddWeightModal()"
+                    th:text="#{profile.weight.add.title}">Dodaj nową wagę</button>
+            </div>
             <div class="chart-container">
                 <canvas id="weight-chart"></canvas>
+            </div>
+
+            <!-- Pagination Controls moved under chart -->
+            <div class="pagination-container" th:if="${totalItems > 0}" style="margin-top: 1.5rem;">
+                <div class="pagination-info"
+                    th:text="#{profile.pagination.info(${currentPage * pageSize + 1}, ${(currentPage + 1) * pageSize > totalItems ? totalItems : (currentPage + 1) * pageSize}, ${totalItems})}">
+                    Pomiary <span></span> -
+                    <span></span>
+                    z <span></span>
+                </div>
+
+                <div class="pagination" th:if="${totalPages > 1}">
+                    <a th:href="@{/profile(page=${currentPage - 1}, size=${pageSize})}"
+                        class="pure-button pagination-button"
+                        th:classappend="${currentPage == 0} ? 'pure-button-disabled'"
+                        th:text="#{profile.pagination.prev}">Poprzednia</a>
+
+                    <span class="pagination-text"
+                        th:text="#{profile.pagination.page(${currentPage + 1}, ${totalPages})}">
+                        Strona <span></span> z <span></span>
+                    </span>
+
+                    <a th:href="@{/profile(page=${currentPage + 1}, size=${pageSize})}"
+                        class="pure-button pagination-button"
+                        th:classappend="${currentPage + 1 >= totalPages} ? 'pure-button-disabled'"
+                        th:text="#{profile.pagination.next}">Następna</a>
+                </div>
+
+                <div>
+                    <form th:action="@{/profile/update-pagination}" method="post" class="pagination-form">
+                        <label class="pagination-label" th:text="#{profile.pagination.per_page}">Na stronę:</label>
+                        <select name="size" onchange="this.form.submit()" class="pagination-select">
+                            <option th:value="25" th:selected="${pageSize == 25}">25</option>
+                            <option th:value="50" th:selected="${pageSize == 50}">50</option>
+                            <option th:value="75" th:selected="${pageSize == 75}">75</option>
+                            <option th:value="100" th:selected="${pageSize == 100}">100</option>
+                        </select>
+                    </form>
+                </div>
             </div>
         </div>
 
@@ -81,83 +105,6 @@
             <p th:text="${'&quot;' + user.motivationalQuote + '&quot;'}"></p>
         </div>
 
-        <!-- History (Collapsible) -->
-        <details class="card history-details">
-            <summary class="history-summary" th:text="#{profile.history.title}">Historia pomiarów</summary>
-            <div class="history-content">
-                <table class="pure-table pure-table-horizontal history-table">
-                    <thead>
-                        <tr>
-                            <th th:text="#{profile.history.date}">Data</th>
-                            <th th:text="#{profile.history.weight}">Waga</th>
-                            <th th:text="#{profile.history.bmi}">BMI</th>
-                            <th class="history-actions" th:text="#{profile.history.actions}">Akcje</th>
-                        </tr>
-                    </thead>
-                    <tbody id="history-body">
-                        <tr th:each="record : ${weightHistory}" th:data-record-id="${record.id}">
-                            <td
-                                th:text="${record.recordDate != null ? #temporals.format(record.recordDate, 'dd.MM.yyyy') : '-'}">
-                            </td>
-                            <td th:text="${record.weight} + ' kg'"></td>
-                            <td
-                                th:text="${record.calculateBMI() != null ? #numbers.formatDecimal(record.calculateBMI(), 1, 'POINT', 1, 'POINT') : '-'}">
-                            </td>
-                            <td class="history-actions">
-                                <button type="button" class="pure-button history-edit-btn"
-                                    th:data-weight="${record.weight}"
-                                    th:data-date="${#temporals.format(record.recordDate, 'yyyy-MM-dd')}"
-                                    onclick="loadRecordForEdit(this)" th:text="#{profile.history.edit}">Edytuj</button>
-
-                                <form th:action="@{/profile/delete-weight/{id}(id=${record.id})}" method="post"
-                                    class="history-delete-form"
-                                    th:onsubmit="'return confirm(\'' + #{profile.history.confirm_delete} + '\')'">
-                                    <button type="submit" class="pure-button history-delete-btn"
-                                        th:text="#{profile.history.delete}">Usuń</button>
-                                </form>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-                <!-- Pagination Controls -->
-                <div class="pagination-container">
-                    <div class="pagination-info"
-                        th:text="#{profile.pagination.info(${currentPage * pageSize + 1}, ${(currentPage + 1) * pageSize > totalItems ? totalItems : (currentPage + 1) * pageSize}, ${totalItems})}">
-                        Pomiary <span></span> -
-                        <span></span>
-                        z <span></span>
-                    </div>
-
-                    <div class="pagination" th:if="${totalPages > 1}">
-                        <a th:href="@{/profile(page=${currentPage - 1}, size=${pageSize})}"
-                            class="pure-button pagination-button"
-                            th:classappend="${currentPage == 0} ? 'pure-button-disabled'"
-                            th:text="#{profile.pagination.prev}">Poprzednia</a>
-
-                        <span class="pagination-text"
-                            th:text="#{profile.pagination.page(${currentPage + 1}, ${totalPages})}">
-                            Strona <span></span> z <span></span>
-                        </span>
-
-                        <a th:href="@{/profile(page=${currentPage + 1}, size=${pageSize})}"
-                            class="pure-button pagination-button"
-                            th:classappend="${currentPage + 1 >= totalPages} ? 'pure-button-disabled'"
-                            th:text="#{profile.pagination.next}">Następna</a>
-                    </div>
-
-                    <div>
-                        <form th:action="@{/profile/update-pagination}" method="post" class="pagination-form">
-                            <label class="pagination-label" th:text="#{profile.pagination.per_page}">Na stronę:</label>
-                            <select name="size" onchange="this.form.submit()" class="pagination-select">
-                                <option th:value="25" th:selected="${pageSize == 25}">25</option>
-                                <option th:value="50" th:selected="${pageSize == 50}">50</option>
-                                <option th:value="75" th:selected="${pageSize == 75}">75</option>
-                                <option th:value="100" th:selected="${pageSize == 100}">100</option>
-                            </select>
-                        </form>
-                    </div>
-                </div>
-        </details>
 
         <!-- Settings / Profile Edit -->
         <div id="profile-edit" class="card profile-edit-section">
@@ -195,11 +142,133 @@
             </form>
         </div>
 
+        <!-- Add Weight Modal -->
+        <div id="add-weight-modal" class="modal"
+            style="display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.4);">
+            <div class="modal-content card"
+                style="background-color: var(--card-bg); margin: 15% auto; padding: 20px; border: 1px solid var(--border-color); width: 90%; max-width: 500px; border-radius: var(--border-radius);">
+                <span class="close-modal" onclick="closeAddWeightModal()"
+                    style="color: var(--text-color); float: right; font-size: 28px; font-weight: bold; cursor: pointer;">&times;</span>
+                <h3 th:text="#{profile.weight.add.title}" style="margin-top: 0;">Dodaj nową wagę</h3>
+                <form id="weight-form" th:action="@{/profile/addWeight}" method="post" class="pure-form weight-form">
+                    <input type="hidden" name="page" th:value="${currentPage}">
+                    <div class="weight-form-field">
+                        <label class="weight-form-label" th:text="#{profile.weight.add.label}">Waga (kg)</label>
+                        <input type="number" name="weight" id="new-weight" step="0.1" placeholder="np. 75.5" required
+                            class="weight-form-input">
+                    </div>
+                    <div class="weight-form-field-wide">
+                        <label class="weight-form-label" th:text="#{profile.weight.add.date}">Data</label>
+                        <input type="date" name="recordDate" id="new-date"
+                            th:value="${#temporals.format(#temporals.createNow(), 'yyyy-MM-dd')}" required
+                            class="weight-form-input">
+                    </div>
+                    <button type="submit" class="pure-button pure-button-primary"
+                        th:text="#{profile.weight.add.submit}">Dodaj wpis</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Edit/Delete Weight Modal -->
+        <div id="edit-weight-modal" class="modal"
+            style="display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.4);">
+            <div class="modal-content card"
+                style="background-color: var(--card-bg); margin: 10% auto; padding: 0; border: none; width: 95%; max-width: 450px; border-radius: 12px; overflow: hidden; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1);">
+
+                <!-- Modal Header -->
+                <div
+                    style="padding: 1.5rem; background: var(--bg-color); border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
+                    <h3 style="margin: 0; font-size: 1.25rem;" th:text="#{profile.history.edit}">Edytuj pomiar</h3>
+                    <span class="close-modal" onclick="closeEditWeightModal()"
+                        style="color: var(--secondary-color); font-size: 24px; font-weight: bold; cursor: pointer; line-height: 1;">&times;</span>
+                </div>
+
+                <div style="padding: 1.5rem;">
+                    <!-- Section 1: Data Info & Weight Edit -->
+                    <div style="margin-bottom: 2rem;">
+                        <div
+                            style="display: flex; align-items: center; margin-bottom: 1rem; color: var(--secondary-color); font-size: 0.9rem;">
+                            <span style="margin-right: 0.5rem;">📅</span>
+                            <span id="edit-date-display" style="font-weight: 600;">--. --. ----</span>
+                        </div>
+
+                        <form id="edit-weight-form" th:action="@{/profile/addWeight}" method="post" class="pure-form">
+                            <input type="hidden" name="page" th:value="${currentPage}">
+                            <input type="hidden" name="recordDate" id="edit-date-hidden">
+                            <div class="weight-form-field" style="margin-bottom: 1rem;">
+                                <label class="weight-form-label" th:text="#{profile.weight.add.label}"
+                                    style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Waga (kg)</label>
+                                <input type="number" name="weight" id="edit-weight" step="0.1" required
+                                    class="weight-form-input"
+                                    style="font-size: 1.1rem; padding: 0.8rem; border: 2px solid #eee; border-radius: 8px; transition: border-color 0.2s;">
+                            </div>
+                            <button type="submit" class="pure-button pure-button-primary"
+                                style="width: 100%; margin: 0; padding: 0.8rem; border-radius: 8px;"
+                                th:text="#{profile.history.edit}">Zapisz zmiany</button>
+                        </form>
+                    </div>
+
+                    <!-- Divider -->
+                    <div style="display: flex; align-items: center; margin-bottom: 1.5rem;">
+                        <div style="flex: 1; height: 1px; background: #eee;"></div>
+                        <div
+                            style="padding: 0 1rem; color: #ccc; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px;">
+                            Niebezpieczna strefa</div>
+                        <div style="flex: 1; height: 1px; background: #eee;"></div>
+                    </div>
+
+                    <!-- Section 2: Deletion -->
+                    <div>
+                        <p style="font-size: 0.85rem; color: var(--secondary-color); margin-bottom: 1rem;">Kliknij
+                            poniższy przycisk, aby trwale usunąć ten pomiar z historii.</p>
+                        <form id="delete-weight-form" action="" method="post" class="history-delete-form"
+                            th:onsubmit="'return confirm(\'' + #{profile.history.confirm_delete} + '\')'">
+                            <input type="hidden" name="page" th:value="${currentPage}">
+                            <button type="submit" class="pure-button"
+                                style="width: 100%; background-color: #fff1f0; color: #cf1322; border: 1px solid #ffa39e; padding: 0.8rem; border-radius: 8px; font-weight: 500;"
+                                th:text="#{profile.history.delete}">Usuń ten wpis</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            function openAddWeightModal() {
+                document.getElementById('add-weight-modal').style.display = 'block';
+            }
+
+            function closeAddWeightModal() {
+                document.getElementById('add-weight-modal').style.display = 'none';
+            }
+
+            function openEditWeightModal() {
+                document.getElementById('edit-weight-modal').style.display = 'block';
+            }
+
+            function closeEditWeightModal() {
+                document.getElementById('edit-weight-modal').style.display = 'none';
+            }
+
+            // Close modals if clicked outside
+            window.onclick = function (event) {
+                var addModal = document.getElementById('add-weight-modal');
+                var editModal = document.getElementById('edit-weight-modal');
+                if (event.target == addModal) {
+                    addModal.style.display = "none";
+                }
+                if (event.target == editModal) {
+                    editModal.style.display = "none";
+                }
+            }
+        </script>
+
         <script th:inline="javascript">
             /*<![CDATA[*/
             const userId = /*[[${user.id}]]*/ 0;
             const chartLabels = /*[[${chartLabels}]]*/[];
             const chartData = /*[[${chartData}]]*/[];
+            const chartRecordIds = /*[[${chartRecordIds}]]*/[];
             const chartWeightLabel = /*[[#{chart.label.weight}]]*/ 'Waga (kg)';
             /*]]>*/
         </script>

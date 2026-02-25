@@ -17,9 +17,10 @@ public interface WeightRecordRepository extends JpaRepository<WeightRecord, Long
     List<WeightRecord> findByBmiUserOrderByRecordDateAsc(BmiUser user);
 
     @Query("SELECT wr FROM WeightRecord wr WHERE wr.bmiUser = :user AND wr.recordDate BETWEEN :startDate AND :endDate ORDER BY wr.recordDate ASC")
-    List<WeightRecord> findByUserAndDateRange(@Param("user") BmiUser user, @Param("startDate") LocalDate startDate, @Param("endDate") LocalDate endDate);
+    List<WeightRecord> findByUserAndDateRange(@Param("user") BmiUser user, @Param("startDate") LocalDate startDate,
+            @Param("endDate") LocalDate endDate);
 
     List<WeightRecord> findByBmiUser(BmiUser user);
 
-    Page<WeightRecord> findByBmiUserOrderByRecordDateDesc(BmiUser user, Pageable pageable);
+    Page<WeightRecord> findByBmiUserOrderByRecordDateAsc(BmiUser user, Pageable pageable);
 }
