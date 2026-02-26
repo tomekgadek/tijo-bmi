@@ -288,6 +288,8 @@
 .profile-save-btn {
     background-color: var(--secondary-color);
     color: white;
+    display: block;
+    margin-left: auto;
 }
 
 /* === Public Profiles === */

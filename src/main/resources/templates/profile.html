@@ -43,7 +43,7 @@
                 <div class="card stat-card">
                     <span class="stat-label" th:text="#{profile.stats.weight}">Waga</span>
                     <div id="stat-weight" class="stat-value"
-                        th:text="${weightHistory != null and !weightHistory.empty ? weightHistory[0].weight : '-'}">-
+                        th:text="${stats != null and stats.currentWeight != null ? stats.currentWeight + ' kg' : '-'}">
                     </div>
                     <span class="stat-unit">kg</span>
                 </div>
@@ -212,15 +212,15 @@
                     <div style="display: flex; align-items: center; margin-bottom: 1.5rem;">
                         <div style="flex: 1; height: 1px; background: #eee;"></div>
                         <div
-                            style="padding: 0 1rem; color: #ccc; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px;">
-                            Niebezpieczna strefa</div>
+                            style="padding: 0 1rem; color: #ccc; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px;"
+                            th:text="#{profile.history.danger_zone}">Niebezpieczna strefa</div>
                         <div style="flex: 1; height: 1px; background: #eee;"></div>
                     </div>
 
                     <!-- Section 2: Deletion -->
                     <div>
-                        <p style="font-size: 0.85rem; color: var(--secondary-color); margin-bottom: 1rem;">Kliknij
-                            poniższy przycisk, aby trwale usunąć ten pomiar z historii.</p>
+                        <p style="font-size: 0.85rem; color: var(--secondary-color); margin-bottom: 1rem;"
+                            th:text="#{profile.history.delete_description}">Kliknij poniższy przycisk, aby trwale usunąć ten pomiar z historii.</p>
                         <form id="delete-weight-form" action="" method="post" class="history-delete-form"
                             th:onsubmit="'return confirm(\'' + #{profile.history.confirm_delete} + '\')'">
                             <input type="hidden" name="page" th:value="${currentPage}">
