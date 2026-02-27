@@ -40,12 +40,4 @@ public class WeightRecord {
         }
     }
 
-    // TODO: do poprawy, logika biznesowa do odzielnej klasy
-    public Double calculateBMI() {
-        if (bmiUser != null && bmiUser.getHeight() != null && weight != null) {
-            double heightInMeters = bmiUser.getHeight() / 100.0;
-            return weight / (heightInMeters * heightInMeters);
-        }
-        return null;
-    }
 }

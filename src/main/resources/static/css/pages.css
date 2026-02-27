@@ -321,6 +321,12 @@
     padding-right: 0.5rem;
 }
 
+@media (max-width: 768px) {
+    .profile-edit-section .profile-edit-half-right {
+        padding-right: 0;
+    }
+}
+
 .profile-edit-half-left {
     left: 0.5rem;
 }

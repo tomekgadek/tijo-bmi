@@ -3,6 +3,7 @@ package com.example.bmimanager.service;
 import com.example.bmimanager.entity.BmiUser;
 import com.example.bmimanager.entity.WeightRecord;
 import com.example.bmimanager.repository.WeightRecordRepository;
+import com.example.bmimanager.util.BmiCalculator;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -62,7 +63,8 @@ public class WeightService {
     public Double getCurrentBMI(BmiUser user) {
         List<WeightRecord> records = getUserWeightRecords(user);
         if (!records.isEmpty()) {
-            return records.getLast().calculateBMI();
+            WeightRecord latest = records.getLast();
+            return BmiCalculator.calculate(latest.getWeight(), user.getHeight());
         }
         return null;
     }

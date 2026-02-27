@@ -59,7 +59,6 @@ public class BmiUser {
         createdAt = LocalDateTime.now();
     }
 
-    // TODO: implementacja do innej klasy, BmiUser nie musi miec informacji o paginacji, etc.
     public void setResultsPerPage(Integer resultsPerPage) {
         if (resultsPerPage != null && resultsPerPage > 0 && resultsPerPage <= 100) {
             this.resultsPerPage = resultsPerPage;
