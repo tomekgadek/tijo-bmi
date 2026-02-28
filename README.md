@@ -6,37 +6,36 @@ Aplikacja webowa do zarządzania indeksem masy ciała (BMI), śleddzenia wagi i 
 ## Funkcjonalności
 
 ### Dla Użytkowników
-- **Rejestracja i Logowanie** - Prosty system autentykacji z Basic Authentication
-- **Zarządzanie Profilem** - Edycja danych osobowych, wzrostu i motywujących cytatów
-- **Śledzenie Wagi** - Dodawanie i usuwanie wpisów wagi w ciągu czasu
-- **Statystyki BMI** - Automatyczne obliczanie BMI na podstawie wagi i wzrostu
-- **Wykresy** - Wizualizacja zmian wagi i BMI
-- **Profile Publiczne** - Opcja udostępnienia swoich osiągnięć innym użytkownikom
-- **Motywujący Cytaty** - Dodawanie cytatów w profilu jako inspiracja
-- **Osiągnięcia** - Udostępnianie swoich celów i sukcesów
+- **Rejestracja i Logowanie** - System uwierzytelniania z Basic Authentication.
+- **Zarządzanie Profilem** - Edycja danych osobowych, wzrostu, celów i motywujących cytatów.
+- **Śledzenie Wagi** - Dodawanie, edytowanie i usuwanie wpisów wagi.
+- **Statystyki BMI** - Automatyczne obliczanie BMI na podstawie wagi i wzrostu.
+- **Historia i Paginacja** - Przeglądanie historii pomiarów z wygodną paginacją.
+- **Wykresy** - Interaktywna wizualizacja zmian wagi (Chart.js).
+- **Profile Publiczne** - Opcja udostępnienia swojego postępu całej społeczności.
+- **Internacjonalizacja (i18n)** - Pełne wsparcie dla języka polskiego i angielskiego.
 
 ### Dla Administratorów
-- **Dashboard** - Przegląd wszystkich użytkowników i ich statystyk BMI
-- **Zarządzanie Użytkownikami** - Podgląd szczegółów każdego użytkownika
-- **Wykresy Porównawcze** - Analiza BMI całej populacji użytkowników
-- **Historia Wagi** - Pełny dostęp do historii wagi wszystkich użytkowników
+- **Dashboard** - Przegląd aktywności użytkowników i statystyk systemu.
+- **Zarządzanie Użytkownikami** - Szczegółowy podgląd profilu każdego użytkownika.
+- **Statusy Kont** - Możliwość blokowania i odblokowywania użytkowników.
 
 ### Strony Publiczne
-- **Strona Główna** - Informacje o aplikacji i problemie otyłości na świecie
-- **Profile Publiczne** - Przeglądanie i inspirowanie się osiągnięciami innych
-- **Wykresy Publiczne** - Podgląd postępu użytkowników, którzy udostępnili swoje profile
+- **Strona Główna** - Nowoczesny landing page zachęcający do dbania o zdrowie.
+- **Lista Profili** - Przeglądanie publicznych profili innych użytkowników.
+- **Widok Profilu** - Dostęp do wykresów i historii użytkowników, którzy zdecydowali się na upublicznienie danych.
 
 ## Wymagania
 
-- **Java 17+** - Środowisko uruchomieniowe
-- **Maven 3.6+** - Menadżer zależności
-- **Przeglądarka** - Chrome, Firefox, Safari lub Edge
+- **Java 17+**
+- **Maven 3.6+**
+- **Przeglądarka internetowa**
 
 ## Instalacja
 
 ### 1. Klonowanie Repozytorium
 ```bash
-git clone https://github.com/tomaszgadek/tijo-bmi.git
+git clone https://github.com/tomekgadek/tijo-bmi.git
 cd tijo-bmi
 ```
 
@@ -52,82 +51,62 @@ mvn clean install
 mvn spring-boot:run
 ```
 
-### Uruchomienie z IDE (IntelliJ IDEA, Eclipse)
-1. Otwórz projekt
-2. Uruchom klasę `BmiManagerApplication` jako Java Application
-
 ### Dostęp do Aplikacji
-Otwórz przeglądarkę i wejdź na:
-```
-http://localhost:8080
-```
+Otwórz przeglądarkę i wejdź na: `http://localhost:8080`
 
 ## Dane Testowe
 
 Aplikacja automatycznie ładuje dane testowe przy starcie. Dostępne konta:
 
-### Konto Administratora
-- **Login:** `admin`
-- **Hasło:** `admin123`
-- **Dostęp:** Dashboard administracyjny
-
-### Konto Użytkownika Demo
-- **Login:** `demo`
-- **Hasło:** `demo123`
-- **Dostęp:** Profil publiczny z przykładowymi danymi
+- **Admin:** `admin` / `admin123`
+- **Użytkownik Demo:** `demo` / `demo123`
 
 ## Architektura
 
 ### Wzorzec Fasada (Facade Pattern)
-Aplikacja implementuje wzorzec Fasada w warstwie serwisów:
-- `BMIFacadeService` - Agreguje logikę biznesową
-- `UserService` - Zarządzanie użytkownikami
-- `WeightService` - Zarządzanie pomiarami wagi
+Aplikacja implementuje wzorzec **Fasada** w warstwie serwisów, agregując logikę biznesową i ukrywając złożoność podsystemów przed kontrolerami:
+- `BMIFacadeService` - Główny punkt styku dla operacji związanych z BMI i statystykami.
+- `UserService` - Zarządzanie kontami i profilami.
+- `WeightService` - Logika pomiarów i obliczeń.
+
 
 ## Technologie
 
 ### Backend
-- **Spring Boot 3.1.5** - Framework webowy
-- **Spring Data JPA** - Dostęp do bazy danych
-- **Spring Security** - Autentykacja i autoryzacja
-- **H2 Database** - Baza danych w pamięci
-- **Hibernate** - ORM
+- **Spring Boot 3.1.5**
+- **Spring Security** - Uwierzytelnianie i autoryzacja (form-login, basic-auth).
+- **Spring Data JPA** - Komunikacja z bazą danych (H2/Hibernate).
+- **Spring MessageSource** - Obsługa wielu języków (i18n).
+- **Lombok** - Redukcja kodu boilerplate.
 
 ### Frontend
-- **Thymeleaf** - Szablonowanie HTML
-- **Pure.css** - Lekki framework CSS
-- **Chart.js** - Wykresy
-
-## Baza Danych
-
-### H2 Console
-Podczas uruchamiania aplikacji, H2 Console jest dostępna pod adresem:
-```
-http://localhost:8080/h2-console
-```
-
-**Parametry połączenia:**
-- **JDBC URL:** `jdbc:h2:mem:bmidb`
-- **Username:** `admin`
-- **Password:** `admin`
-
-### Tabele
-- **users** - Przechowuje dane użytkowników
-- **weight_records** - Przechowuje pomiary wagi i daty
+- **Thymeleaf** - Silnik szablonów.
+- **Pure.css** - Lekki szkielet CSS.
+- **Chart.js** - Wizualizacje.
+- **Custom CSS** - Dedykowane style dla nowoczesnego wyglądu.
 
 ## Bezpieczeństwo
 
-- **Basic Authentication** - Podstawowy system logowania
-- **Password Encoding** - Hasła kodowane z BCrypt
-- **CSRF Protection** - Wyłączone
-- **Role-Based Access Control** - Dostęp do panelu admina ograniczony do roli ADMIN
-- **Session Management** - Obsługa sesji użytkownika
+- **BCrypt** - Hasła są bezpiecznie hashowane.
+- **RBAC** - Dostęp do zasobów administracyjnych ograniczony rolami (ROLE_ADMIN).
+- **Session Management** - Zarządzanie sesjami użytkowników.
 
-### Kategorie BMI
+## Kategorie BMI (Zgodnie z WHO)
+
 - **< 18.5** - Niedowaga
 - **18.5 - 24.9** - Prawidłowa waga
 - **25.0 - 29.9** - Nadwaga
 - **≥ 30.0** - Otyłość
+
+## Planowane poprawki i rozwój
+
++ Wdrożenie testów jednostkowych i integracyjnych.
++ Obsługa wgrywania zdjęć profilowych.
++ Dodanie powiadomień o przypomnieniu o ważeniu.
++ Eksport danych do formatu CSV/PDF.
++ Optymalizacja zapytań SQL.
++ Poprawa obsługi błędów w warstwie UI (lepsze komunikaty walidacyjne).
++ Refaktoryzacja brakujących fragmentów kodu opisanych jako TODO.
 
 ## Licencja
 
@@ -135,17 +114,6 @@ Projekt jest dostępny na licencji MIT.
 
 ## Autor
 
-Tomasz Gądek
+Tomasz Gadek
 
-## Planowane poprawki w kodzie
 
-+ Poprawki związane z routingiem na stronie.
-+ Przenieść skrypty JS do odzielnej lokalizacji
-+ Zmiana frameworków frontendowych.
-+ Dopracowanie dokumentacji.
-+ Poprawne zastosowanie wzorca projektowego **Fasada**.
-+ Pozbycie się niepotrzebnego nadmiarowego kodu.
-+ Usunięcie niepotrzebnych komentarzy.
-+ Dopracowanie UI (jeszcze nie działa dobrze).
-+ Modele LLM tworzą działający kod, ale wymagają jeszcze refaktoryzacji - pasuje przeanalizować cały kod.
-+ Poprawić kod opisany komentarzami **TODO**
