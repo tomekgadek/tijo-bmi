@@ -1,11 +1,11 @@
 package com.example.bmimanager.controller;
 
-import com.example.bmimanager.service.BMIFacadeService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import com.example.bmimanager.service.BMIFacadeService;
 
 @Controller
 public class AuthController {

@@ -89,7 +89,7 @@ public class UserProfileController {
         String username = authentication.getName();
         userService.findByUsername(username).ifPresent(user -> {
             user.setResultsPerPage(size);
-            userService.getUserRepository().save(user);
+            userService.saveUser(user);
         });
         return "redirect:/profile";
     }

@@ -12,16 +12,20 @@ import java.util.Optional;
 public class UserService {
 
     private final BmiUserRepository bmiUserRepository;
-    private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+    private final BCryptPasswordEncoder passwordEncoder;
+    private final org.springframework.context.MessageSource messageSource;
 
-    public UserService(BmiUserRepository bmiUserRepository) {
+    public UserService(BmiUserRepository bmiUserRepository, BCryptPasswordEncoder passwordEncoder,
+            org.springframework.context.MessageSource messageSource) {
         this.bmiUserRepository = bmiUserRepository;
+        this.passwordEncoder = passwordEncoder;
+        this.messageSource = messageSource;
     }
 
     public BmiUser registerUser(String username, String password) {
         if (bmiUserRepository.findByUsername(username).isPresent()) {
-            // TODO: pasuje wydzielić te komunukaty do zewnętrznego pliku
-            throw new IllegalArgumentException("Username już istnieje");
+            throw new IllegalArgumentException(messageSource.getMessage("validation.username.exists", null,
+                    org.springframework.context.i18n.LocaleContextHolder.getLocale()));
         }
 
         BmiUser bmiUser = BmiUser.builder()
@@ -46,8 +50,8 @@ public class UserService {
             String motivationalQuote, String achievement) {
         BmiUser user = getUserById(userId);
         if (user == null) {
-            // TODO: pasuje wydzielić te komunukaty do zewnętrznego pliku
-            throw new IllegalArgumentException("Użytkownik nie znaleziony");
+            throw new IllegalArgumentException(messageSource.getMessage("validation.user.notfound", null,
+                    org.springframework.context.i18n.LocaleContextHolder.getLocale()));
         }
 
         user.setFirstName(firstName);
@@ -60,6 +64,10 @@ public class UserService {
         return bmiUserRepository.save(user);
     }
 
+    public List<BmiUser> getAllUsers() {
+        return bmiUserRepository.findAll();
+    }
+
     public boolean validatePassword(String rawPassword, String encodedPassword) {
         return passwordEncoder.matches(rawPassword, encodedPassword);
     }
@@ -68,8 +76,8 @@ public class UserService {
         return bmiUserRepository.findByIsPublicTrueAndIsBlockedFalse();
     }
 
-    public BmiUserRepository getUserRepository() {
-        return bmiUserRepository;
+    public void saveUser(BmiUser user) {
+        bmiUserRepository.save(user);
     }
 
     public void deleteUser(Long userId) {

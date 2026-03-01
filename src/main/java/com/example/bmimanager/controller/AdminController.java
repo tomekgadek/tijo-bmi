@@ -4,7 +4,6 @@ import com.example.bmimanager.entity.BmiUser;
 import com.example.bmimanager.entity.WeightRecord;
 import com.example.bmimanager.service.BMIFacadeService;
 import com.example.bmimanager.service.UserService;
-import org.slf4j.Logger;
 import org.springframework.data.domain.Page;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
@@ -22,8 +21,6 @@ import java.util.stream.Collectors;
 @RequestMapping("/admin")
 public class AdminController {
 
-    private final static Logger log = org.slf4j.LoggerFactory.getLogger(AdminController.class);
-
     private final UserService userService;
     private final BMIFacadeService bmiFacadeService;
 
@@ -34,16 +31,7 @@ public class AdminController {
 
     @GetMapping("/dashboard")
     public String adminDashboard(Authentication authentication, Model model) {
-        boolean isAdmin = authentication.getAuthorities().stream()
-                .anyMatch(auth -> auth.getAuthority().equals("ROLE_ADMIN"));
-
-        log.info("User {} is admin: {}", authentication.getName(), isAdmin);
-
-        if (!isAdmin) {
-            return "redirect:/profile";
-        }
-
-        List<BmiUser> allBmiUsers = userService.getUserRepository().findAll();
+        List<BmiUser> allBmiUsers = userService.getAllUsers();
 
         // Prepare data for the chart - handle null BMIs by converting them to 0 or
         // omitting
@@ -69,7 +57,7 @@ public class AdminController {
 
     @GetMapping("/users")
     public String viewUsers(Model model) {
-        List<BmiUser> users = userService.getUserRepository().findAll();
+        List<BmiUser> users = userService.getAllUsers();
         model.addAttribute("users", users);
         return "admin/users";
     }
@@ -121,7 +109,7 @@ public class AdminController {
                 BmiUser user = userService.getUserById(userId);
                 if (user != null) {
                     user.setIsBlocked(true);
-                    userService.getUserRepository().save(user);
+                    userService.saveUser(user);
                 }
             }
         });
@@ -135,7 +123,7 @@ public class AdminController {
                 BmiUser user = userService.getUserById(userId);
                 if (user != null) {
                     user.setIsBlocked(false);
-                    userService.getUserRepository().save(user);
+                    userService.saveUser(user);
                 }
             }
         });

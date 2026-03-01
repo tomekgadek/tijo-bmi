@@ -11,6 +11,7 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface WeightRecordRepository extends JpaRepository<WeightRecord, Long> {
@@ -23,4 +24,6 @@ public interface WeightRecordRepository extends JpaRepository<WeightRecord, Long
     List<WeightRecord> findByBmiUser(BmiUser user);
 
     Page<WeightRecord> findByBmiUserOrderByRecordDateAsc(BmiUser user, Pageable pageable);
+
+    Optional<WeightRecord> findTopByBmiUserOrderByRecordDateDesc(BmiUser user);
 }

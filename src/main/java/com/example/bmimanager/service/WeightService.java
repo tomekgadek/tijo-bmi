@@ -61,23 +61,17 @@ public class WeightService {
     }
 
     public Double getCurrentBMI(BmiUser user) {
-        List<WeightRecord> records = getUserWeightRecords(user);
-        if (!records.isEmpty()) {
-            WeightRecord latest = records.getLast();
-            return BmiCalculator.calculate(latest.getWeight(), user.getHeight());
-        }
-        return null;
+        return weightRecordRepository.findTopByBmiUserOrderByRecordDateDesc(user)
+                .map(record -> BmiCalculator.calculate(record.getWeight(), user.getHeight()))
+                .orElse(null);
     }
 
     public Double getCurrentWeight(BmiUser user) {
-        List<WeightRecord> records = getUserWeightRecords(user);
-        if (!records.isEmpty()) {
-            return records.getLast().getWeight();
-        }
-        return null;
+        return weightRecordRepository.findTopByBmiUserOrderByRecordDateDesc(user)
+                .map(WeightRecord::getWeight)
+                .orElse(null);
     }
 
-    // TODO: zweryfikować wszystkie nieużywane metody i ostatecznie je usunąć
     public WeightRecord updateWeightRecord(Long recordId, Double weight, LocalDate recordDate) {
         WeightRecord record = getWeightRecordById(recordId);
         if (record != null) {

@@ -60,6 +60,7 @@ Aplikacja automatycznie ładuje dane testowe przy starcie. Dostępne konta:
 
 - **Admin:** `admin` / `admin123`
 - **Użytkownik Demo:** `demo` / `demo123`
+- **Użytkownik Tomek:** `tomek` / `tomek123`
 
 ## Architektura
 

@@ -84,17 +84,17 @@ public class BMIFacadeService {
      */
     public BMIStatistics getBMIStatistics(Long userId) {
         BmiUser user = userService.getUserById(userId);
-        if (user == null)
-            return null; // TODO: pasuje coś zrobić z tym zwracanym null :(
+        if (user == null) {
+            return BMIStatistics.empty();
+        }
 
         Double currentWeight = weightService.getCurrentWeight(user);
         Double currentBMI = weightService.getCurrentBMI(user);
         Double lowestWeight = weightService.getLowestWeight(user);
         Double highestWeight = weightService.getHighestWeight(user);
-        List<WeightRecord> records = weightService.getUserWeightRecords(user);
 
-        // TODO: nie podoba mi się ta składnia
-        WeightRecord latestRecord = records.isEmpty() ? null : records.get(records.size() - 1);
+        List<WeightRecord> records = weightService.getUserWeightRecords(user);
+        WeightRecord latestRecord = records.isEmpty() ? null : records.getLast();
 
         return new BMIStatistics(
                 currentWeight,
@@ -161,13 +161,13 @@ public class BMIFacadeService {
      * Pomocna klasa do przechowywania statystyk BMI
      */
     public static class BMIStatistics {
-        public Double currentWeight;
-        public Double currentBMI;
-        public Double lowestWeight;
-        public Double highestWeight;
-        public Integer recordCount;
-        public BMICategory category;
-        public WeightRecord latestRecord;
+        private final Double currentWeight;
+        private final Double currentBMI;
+        private final Double lowestWeight;
+        private final Double highestWeight;
+        private final Integer recordCount;
+        private final BMICategory category;
+        private final WeightRecord latestRecord;
 
         public BMIStatistics(Double currentWeight, Double currentBMI, Double lowestWeight, Double highestWeight,
                 Integer recordCount, BMICategory category, WeightRecord latestRecord) {
@@ -178,6 +178,10 @@ public class BMIFacadeService {
             this.recordCount = recordCount;
             this.category = category;
             this.latestRecord = latestRecord;
+        }
+
+        public static BMIStatistics empty() {
+            return new BMIStatistics(null, null, null, null, 0, BMICategory.NO_DATA, null);
         }
 
         public Double getCurrentWeight() {

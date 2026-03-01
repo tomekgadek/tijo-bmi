@@ -1,4 +1,4 @@
-package com.example.bmimanager.config;
+package com.example.bmimanager.infrastructure.security;
 
 import com.example.bmimanager.entity.BmiUser;
 import com.example.bmimanager.service.UserService;
@@ -30,7 +30,8 @@ public class AuthenticationConfig {
                     .orElseThrow(() -> new org.springframework.security.core.userdetails.UsernameNotFoundException(
                             "Użytkownik nie znaleziony: " + username));
 
-            // Zamiast przypisywać role bezpośrednio, możesz sprawdzić czy użytkownik to admin
+            // Zamiast przypisywać role bezpośrednio, możesz sprawdzić czy użytkownik to
+            // admin
             // Na potrzeby tego projektu admin to użytkownik o username "admin"
             String role = username.equals("admin") ? "ROLE_ADMIN" : "ROLE_USER";
 
