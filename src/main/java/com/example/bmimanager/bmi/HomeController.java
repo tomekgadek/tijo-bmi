@@ -1,4 +1,4 @@
-package com.example.bmimanager.controller;
+package com.example.bmimanager.bmi;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;

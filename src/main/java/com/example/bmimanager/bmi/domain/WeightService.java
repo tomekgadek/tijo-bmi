@@ -1,9 +1,5 @@
-package com.example.bmimanager.service;
+package com.example.bmimanager.bmi.domain;
 
-import com.example.bmimanager.entity.BmiUser;
-import com.example.bmimanager.entity.WeightRecord;
-import com.example.bmimanager.repository.WeightRecordRepository;
-import com.example.bmimanager.util.BmiCalculator;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -46,10 +42,6 @@ public class WeightService {
     public Page<WeightRecord> getPaginatedUserWeightRecords(BmiUser bmiUser, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
         return weightRecordRepository.findByBmiUserOrderByRecordDateAsc(bmiUser, pageable);
-    }
-
-    public List<WeightRecord> getUserWeightRecordsByDateRange(BmiUser bmiUser, LocalDate startDate, LocalDate endDate) {
-        return weightRecordRepository.findByUserAndDateRange(bmiUser, startDate, endDate);
     }
 
     public void deleteWeightRecord(Long recordId) {

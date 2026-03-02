@@ -1,4 +1,4 @@
-package com.example.bmimanager.entity;
+package com.example.bmimanager.bmi.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
@@ -25,7 +25,7 @@ public class WeightRecord {
     private BmiUser bmiUser;
 
     @Column(nullable = false)
-    private Double weight; // w kg
+    private Double weight;
 
     @Column(nullable = false)
     private LocalDate recordDate;

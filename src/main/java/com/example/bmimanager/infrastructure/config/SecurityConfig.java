@@ -1,4 +1,4 @@
-package com.example.bmimanager.infrastructure.security;
+package com.example.bmimanager.infrastructure.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -41,7 +41,7 @@ public class SecurityConfig {
                 .logout(logout -> logout
                         .logoutSuccessUrl("/")
                         .permitAll())
-                .headers(headers -> headers.frameOptions(frame -> frame.sameOrigin())); // For H2 console
+                .headers(headers -> headers.frameOptions(frame -> frame.sameOrigin()));
 
         return http.build();
     }

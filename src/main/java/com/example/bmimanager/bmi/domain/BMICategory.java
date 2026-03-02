@@ -1,8 +1,5 @@
-package com.example.bmimanager.model;
+package com.example.bmimanager.bmi.domain;
 
-/**
- * Categories of Body Mass Index (BMI).
- */
 public enum BMICategory {
     NO_DATA,
     UNDERWEIGHT,

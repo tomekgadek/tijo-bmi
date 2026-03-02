@@ -1,7 +1,7 @@
-package com.example.bmimanager.infrastructure.security;
+package com.example.bmimanager.infrastructure.authentication;
 
-import com.example.bmimanager.entity.BmiUser;
-import com.example.bmimanager.service.UserService;
+import com.example.bmimanager.bmi.domain.BmiUser;
+import com.example.bmimanager.bmi.domain.UserService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -13,12 +13,12 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 @Configuration
-public class AuthenticationConfig {
+public class AuthenticationConfiguration {
 
     private final UserService userService;
     private final BCryptPasswordEncoder passwordEncoder;
 
-    public AuthenticationConfig(UserService userService, BCryptPasswordEncoder passwordEncoder) {
+    public AuthenticationConfiguration(UserService userService, BCryptPasswordEncoder passwordEncoder) {
         this.userService = userService;
         this.passwordEncoder = passwordEncoder;
     }
@@ -30,9 +30,6 @@ public class AuthenticationConfig {
                     .orElseThrow(() -> new org.springframework.security.core.userdetails.UsernameNotFoundException(
                             "Użytkownik nie znaleziony: " + username));
 
-            // Zamiast przypisywać role bezpośrednio, możesz sprawdzić czy użytkownik to
-            // admin
-            // Na potrzeby tego projektu admin to użytkownik o username "admin"
             String role = username.equals("admin") ? "ROLE_ADMIN" : "ROLE_USER";
 
             return User.builder()

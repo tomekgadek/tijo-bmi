@@ -1,4 +1,4 @@
-package com.example.bmimanager.entity;
+package com.example.bmimanager.bmi.domain;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -31,7 +31,7 @@ public class BmiUser {
     private String lastName;
 
     @Column(nullable = true)
-    private Double height; // w cm
+    private Double height;
 
     @Column(nullable = false)
     @Builder.Default

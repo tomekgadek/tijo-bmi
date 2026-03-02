@@ -1,9 +1,9 @@
-package com.example.bmimanager.controller;
+package com.example.bmimanager.bmi;
 
-import com.example.bmimanager.entity.BmiUser;
-import com.example.bmimanager.entity.WeightRecord;
-import com.example.bmimanager.service.BMIFacadeService;
-import com.example.bmimanager.service.UserService;
+import com.example.bmimanager.bmi.domain.BmiUser;
+import com.example.bmimanager.bmi.domain.WeightRecord;
+import com.example.bmimanager.bmi.domain.BmiFacade;
+import com.example.bmimanager.bmi.domain.UserService;
 import org.springframework.data.domain.Page;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
@@ -22,23 +22,21 @@ import java.util.stream.Collectors;
 public class AdminController {
 
     private final UserService userService;
-    private final BMIFacadeService bmiFacadeService;
+    private final BmiFacade bmiFacade;
 
-    public AdminController(UserService userService, BMIFacadeService bmiFacadeService) {
+    public AdminController(UserService userService, BmiFacade bmiFacade) {
         this.userService = userService;
-        this.bmiFacadeService = bmiFacadeService;
+        this.bmiFacade = bmiFacade;
     }
 
     @GetMapping("/dashboard")
     public String adminDashboard(Authentication authentication, Model model) {
         List<BmiUser> allBmiUsers = userService.getAllUsers();
 
-        // Prepare data for the chart - handle null BMIs by converting them to 0 or
-        // omitting
         List<String> usernames = allBmiUsers.stream().map(BmiUser::getUsername).collect(Collectors.toList());
         List<Double> currentBMIs = allBmiUsers.stream()
                 .map(user -> {
-                    Double bmi = bmiFacadeService.getUserCurrentBMI(user.getId());
+                    Double bmi = bmiFacade.getUserCurrentBMI(user.getId());
                     return bmi != null ? (double) Math.round(bmi * 10) / 10 : 0.0;
                 })
                 .collect(Collectors.toList());
@@ -73,10 +71,9 @@ public class AdminController {
             return "redirect:/admin/users";
         }
 
-        Page<WeightRecord> paginatedHistory = bmiFacadeService.getPaginatedUserWeightHistory(userId, page, size);
-        BMIFacadeService.BMIStatistics stats = bmiFacadeService.getBMIStatistics(userId);
+        Page<WeightRecord> paginatedHistory = bmiFacade.getPaginatedUserWeightHistory(userId, page, size);
+        BmiFacade.BMIStatistics stats = bmiFacade.getBMIStatistics(userId);
 
-        // Prepare chart data
         List<WeightRecord> currentSlice = paginatedHistory.getContent();
         List<WeightRecord> chronologicalSlice = currentSlice.stream()
                 .sorted(java.util.Comparator.comparing(WeightRecord::getRecordDate))

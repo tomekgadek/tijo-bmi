@@ -1,9 +1,9 @@
-package com.example.bmimanager.service;
+package com.example.bmimanager.bmi.domain;
 
-import com.example.bmimanager.entity.BmiUser;
-import com.example.bmimanager.repository.BmiUserRepository;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 
 import java.util.List;
 import java.util.Optional;
@@ -13,10 +13,10 @@ public class UserService {
 
     private final BmiUserRepository bmiUserRepository;
     private final BCryptPasswordEncoder passwordEncoder;
-    private final org.springframework.context.MessageSource messageSource;
+    private final MessageSource messageSource;
 
     public UserService(BmiUserRepository bmiUserRepository, BCryptPasswordEncoder passwordEncoder,
-            org.springframework.context.MessageSource messageSource) {
+            MessageSource messageSource) {
         this.bmiUserRepository = bmiUserRepository;
         this.passwordEncoder = passwordEncoder;
         this.messageSource = messageSource;
@@ -24,8 +24,8 @@ public class UserService {
 
     public BmiUser registerUser(String username, String password) {
         if (bmiUserRepository.findByUsername(username).isPresent()) {
-            throw new IllegalArgumentException(messageSource.getMessage("validation.username.exists", null,
-                    org.springframework.context.i18n.LocaleContextHolder.getLocale()));
+            throw new IllegalArgumentException(
+                    messageSource.getMessage("validation.username.exists", null, LocaleContextHolder.getLocale()));
         }
 
         BmiUser bmiUser = BmiUser.builder()
@@ -50,8 +50,8 @@ public class UserService {
             String motivationalQuote, String achievement) {
         BmiUser user = getUserById(userId);
         if (user == null) {
-            throw new IllegalArgumentException(messageSource.getMessage("validation.user.notfound", null,
-                    org.springframework.context.i18n.LocaleContextHolder.getLocale()));
+            throw new IllegalArgumentException(
+                    messageSource.getMessage("validation.user.notfound", null, LocaleContextHolder.getLocale()));
         }
 
         user.setFirstName(firstName);
@@ -66,10 +66,6 @@ public class UserService {
 
     public List<BmiUser> getAllUsers() {
         return bmiUserRepository.findAll();
-    }
-
-    public boolean validatePassword(String rawPassword, String encodedPassword) {
-        return passwordEncoder.matches(rawPassword, encodedPassword);
     }
 
     public List<BmiUser> getPublicProfiles() {

@@ -1,9 +1,9 @@
-package com.example.bmimanager.controller;
+package com.example.bmimanager.bmi;
 
-import com.example.bmimanager.entity.BmiUser;
-import com.example.bmimanager.entity.WeightRecord;
-import com.example.bmimanager.service.BMIFacadeService;
-import com.example.bmimanager.service.UserService;
+import com.example.bmimanager.bmi.domain.BmiUser;
+import com.example.bmimanager.bmi.domain.WeightRecord;
+import com.example.bmimanager.bmi.domain.BmiFacade;
+import com.example.bmimanager.bmi.domain.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -13,7 +13,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
-
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -23,11 +22,11 @@ public class UserProfileController {
 
     private final Logger log = LoggerFactory.getLogger(UserProfileController.class);
 
-    private final BMIFacadeService bmiFacadeService;
+    private final BmiFacade bmiFacade;
     private final UserService userService;
 
-    public UserProfileController(BMIFacadeService bmiFacadeService, UserService userService) {
-        this.bmiFacadeService = bmiFacadeService;
+    public UserProfileController(BmiFacade bmiFacade, UserService userService) {
+        this.bmiFacade = bmiFacade;
         this.userService = userService;
     }
 
@@ -45,20 +44,16 @@ public class UserProfileController {
 
         int pageSize = (size != null) ? size : bmiUser.getResultsPerPage();
 
-        // If page is not specified, redirect to the last page
         if (page == null) {
-            Page<WeightRecord> firstPage = bmiFacadeService.getPaginatedUserWeightHistory(bmiUser.getId(), 0, pageSize);
+            Page<WeightRecord> firstPage = bmiFacade.getPaginatedUserWeightHistory(bmiUser.getId(), 0, pageSize);
             int lastPage = Math.max(0, firstPage.getTotalPages() - 1);
             return "redirect:/profile?page=" + lastPage;
         }
 
-        BMIFacadeService.BMIStatistics stats = bmiFacadeService.getBMIStatistics(bmiUser.getId());
-        Page<WeightRecord> paginatedHistory = bmiFacadeService.getPaginatedUserWeightHistory(bmiUser.getId(), page,
-                pageSize);
+        BmiFacade.BMIStatistics stats = bmiFacade.getBMIStatistics(bmiUser.getId());
+        Page<WeightRecord> paginatedHistory = bmiFacade.getPaginatedUserWeightHistory(bmiUser.getId(), page, pageSize);
 
-        List<WeightRecord> currentSlice = paginatedHistory.getContent();
-        // Since we fetch in ascending order, the current slice is already chronological
-        List<WeightRecord> chronologicalSlice = currentSlice;
+        List<WeightRecord> chronologicalSlice = paginatedHistory.getContent();
 
         List<String> chartLabels = chronologicalSlice.stream()
                 .map(r -> r.getRecordDate().toString())
@@ -105,9 +100,9 @@ public class UserProfileController {
         if (bmiUser != null) {
             try {
                 if (recordDate != null && !recordDate.isEmpty()) {
-                    bmiFacadeService.recordWeight(bmiUser.getId(), weight, LocalDate.parse(recordDate));
+                    bmiFacade.recordWeight(bmiUser.getId(), weight, LocalDate.parse(recordDate));
                 } else {
-                    bmiFacadeService.recordWeight(bmiUser.getId(), weight);
+                    bmiFacade.recordWeight(bmiUser.getId(), weight);
                 }
             } catch (Exception e) {
                 log.error(e.getMessage());
@@ -131,7 +126,7 @@ public class UserProfileController {
         BmiUser bmiUser = userService.findByUsername(username).orElse(null);
 
         if (bmiUser != null) {
-            bmiFacadeService.updateUserProfile(
+            bmiFacade.updateUserProfile(
                     bmiUser.getId(), firstName, lastName, height, isPublic, motivationalQuote, achievement);
         }
 
@@ -146,7 +141,7 @@ public class UserProfileController {
         BmiUser user = userService.findByUsername(username).orElse(null);
 
         if (user != null) {
-            bmiFacadeService.updateWeightRecord(user.getId(), recordId, weight);
+            bmiFacade.updateWeightRecord(user.getId(), recordId, weight);
         }
 
         return page != null ? "redirect:/profile?page=" + page : "redirect:/profile";
@@ -160,7 +155,7 @@ public class UserProfileController {
         BmiUser user = userService.findByUsername(username).orElse(null);
 
         if (user != null) {
-            bmiFacadeService.deleteWeightRecord(user.getId(), recordId);
+            bmiFacade.deleteWeightRecord(user.getId(), recordId);
         }
 
         return page != null ? "redirect:/profile?page=" + page : "redirect:/profile";

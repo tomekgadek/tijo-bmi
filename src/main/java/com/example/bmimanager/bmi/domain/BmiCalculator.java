@@ -1,7 +1,6 @@
-package com.example.bmimanager.util;
+package com.example.bmimanager.bmi.domain;
 
 public final class BmiCalculator {
-
     private BmiCalculator() {
     }
 

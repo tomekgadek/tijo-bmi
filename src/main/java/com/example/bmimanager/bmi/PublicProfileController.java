@@ -1,11 +1,11 @@
-package com.example.bmimanager.controller;
+package com.example.bmimanager.bmi;
 
-import com.example.bmimanager.dto.PublicProfileDto;
-import com.example.bmimanager.entity.BmiUser;
-import com.example.bmimanager.entity.WeightRecord;
-import com.example.bmimanager.service.BMIFacadeService;
-import com.example.bmimanager.service.UserService;
-import com.example.bmimanager.service.WeightService;
+import com.example.bmimanager.bmi.dto.PublicProfileDto;
+import com.example.bmimanager.bmi.domain.BmiUser;
+import com.example.bmimanager.bmi.domain.WeightRecord;
+import com.example.bmimanager.bmi.domain.BmiFacade;
+import com.example.bmimanager.bmi.domain.UserService;
+import com.example.bmimanager.bmi.domain.WeightService;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -23,18 +23,17 @@ public class PublicProfileController {
 
     private final UserService userService;
     private final WeightService weightService;
-    private final BMIFacadeService bmiFacadeService;
+    private final BmiFacade bmiFacade;
 
-    public PublicProfileController(UserService userService, WeightService weightService,
-            BMIFacadeService bmiFacadeService) {
+    public PublicProfileController(UserService userService, WeightService weightService, BmiFacade bmiFacade) {
         this.userService = userService;
         this.weightService = weightService;
-        this.bmiFacadeService = bmiFacadeService;
+        this.bmiFacade = bmiFacade;
     }
 
     @GetMapping("/profiles")
     public String viewPublicProfiles(Model model) {
-        List<BmiUser> publicBmiUsers = bmiFacadeService.getPublicProfiles();
+        List<BmiUser> publicBmiUsers = bmiFacade.getPublicProfiles();
         List<PublicProfileDto> profiles = publicBmiUsers.stream()
                 .map(user -> new PublicProfileDto(
                         user,
@@ -58,27 +57,23 @@ public class PublicProfileController {
             return "redirect:/public/profiles";
         }
 
-        // If page is not specified, redirect to the last page
         if (page == null) {
-            Page<WeightRecord> firstPage = bmiFacadeService.getPaginatedUserWeightHistory(userId, 0, size);
+            Page<WeightRecord> firstPage = bmiFacade.getPaginatedUserWeightHistory(userId, 0, size);
             int lastPage = Math.max(0, firstPage.getTotalPages() - 1);
             return "redirect:/public/profile/" + userId + "?page=" + lastPage;
         }
 
-        Page<WeightRecord> paginatedHistory = bmiFacadeService.getPaginatedUserWeightHistory(userId, page, size);
-        BMIFacadeService.BMIStatistics stats = bmiFacadeService.getBMIStatistics(userId);
+        Page<WeightRecord> paginatedHistory = bmiFacade.getPaginatedUserWeightHistory(userId, page, size);
+        BmiFacade.BMIStatistics stats = bmiFacade.getBMIStatistics(userId);
 
-        // Przygotowanie danych do wygenerowania wykresu
         List<WeightRecord> currentSlice = paginatedHistory.getContent();
-        List<WeightRecord> chronologicalSlice = currentSlice;
-
-        List<String> chartLabels = chronologicalSlice.stream()
+        List<String> chartLabels = currentSlice.stream()
                 .map(r -> r.getRecordDate().toString())
                 .collect(Collectors.toList());
-        List<Double> chartData = chronologicalSlice.stream()
+        List<Double> chartData = currentSlice.stream()
                 .map(WeightRecord::getWeight)
                 .collect(Collectors.toList());
-        List<Long> chartRecordIds = chronologicalSlice.stream()
+        List<Long> chartRecordIds = currentSlice.stream()
                 .map(WeightRecord::getId)
                 .collect(Collectors.toList());
 
