@@ -1,4 +1,4 @@
-package com.example.bmimanager.bmi.domain;
+package com.example.bmimanager.user.domain;
 
 import jakarta.persistence.*;
 import lombok.*;

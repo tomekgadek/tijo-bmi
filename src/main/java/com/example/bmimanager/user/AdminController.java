@@ -1,9 +1,9 @@
-package com.example.bmimanager.bmi;
+package com.example.bmimanager.user;
 
-import com.example.bmimanager.bmi.domain.BmiUser;
-import com.example.bmimanager.bmi.domain.WeightRecord;
+import com.example.bmimanager.user.domain.BmiUser;
+import com.example.bmimanager.profile.domain.WeightRecord;
 import com.example.bmimanager.bmi.domain.BmiFacade;
-import com.example.bmimanager.bmi.domain.UserService;
+import com.example.bmimanager.user.domain.UserService;
 import org.springframework.data.domain.Page;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;

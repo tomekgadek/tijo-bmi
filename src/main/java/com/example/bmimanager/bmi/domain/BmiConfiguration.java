@@ -1,5 +1,7 @@
 package com.example.bmimanager.bmi.domain;
 
+import com.example.bmimanager.user.domain.UserService;
+import com.example.bmimanager.profile.domain.WeightService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 

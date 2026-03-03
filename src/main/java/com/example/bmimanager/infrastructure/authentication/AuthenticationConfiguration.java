@@ -1,7 +1,7 @@
 package com.example.bmimanager.infrastructure.authentication;
 
-import com.example.bmimanager.bmi.domain.BmiUser;
-import com.example.bmimanager.bmi.domain.UserService;
+import com.example.bmimanager.user.domain.BmiUser;
+import com.example.bmimanager.user.domain.UserService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;

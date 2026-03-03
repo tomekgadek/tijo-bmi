@@ -1,5 +1,7 @@
-package com.example.bmimanager.bmi.domain;
+package com.example.bmimanager.profile.domain;
 
+import com.example.bmimanager.user.domain.BmiUser;
+import com.example.bmimanager.bmi.domain.BmiCalculator;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;

@@ -1,4 +1,4 @@
-package com.example.bmimanager.bmi;
+package com.example.bmimanager.user;
 
 import com.example.bmimanager.bmi.domain.BmiFacade;
 import org.springframework.stereotype.Controller;

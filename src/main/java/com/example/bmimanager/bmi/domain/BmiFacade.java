@@ -1,5 +1,9 @@
 package com.example.bmimanager.bmi.domain;
 
+import com.example.bmimanager.user.domain.BmiUser;
+import com.example.bmimanager.profile.domain.WeightRecord;
+import com.example.bmimanager.user.domain.UserService;
+import com.example.bmimanager.profile.domain.WeightService;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 

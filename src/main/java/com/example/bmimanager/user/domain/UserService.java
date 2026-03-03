@@ -1,4 +1,4 @@
-package com.example.bmimanager.bmi.domain;
+package com.example.bmimanager.user.domain;
 
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;

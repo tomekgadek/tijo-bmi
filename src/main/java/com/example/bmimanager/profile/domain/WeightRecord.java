@@ -1,5 +1,6 @@
-package com.example.bmimanager.bmi.domain;
+package com.example.bmimanager.profile.domain;
 
+import com.example.bmimanager.user.domain.BmiUser;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
