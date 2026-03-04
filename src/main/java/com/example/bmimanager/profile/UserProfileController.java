@@ -1,7 +1,7 @@
 package com.example.bmimanager.profile;
 
 import com.example.bmimanager.user.domain.BmiUser;
-import com.example.bmimanager.profile.domain.WeightRecord;
+import com.example.bmimanager.weight.domain.WeightRecord;
 import com.example.bmimanager.bmi.domain.BmiFacade;
 import com.example.bmimanager.user.domain.UserService;
 import org.slf4j.Logger;

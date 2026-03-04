@@ -1,21 +1,19 @@
-package com.example.bmimanager.profile.domain;
+package com.example.bmimanager.weight.domain;
 
 import com.example.bmimanager.user.domain.BmiUser;
 import com.example.bmimanager.bmi.domain.BmiCalculator;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.List;
 
-@Service
-public class WeightService {
+public class WeightFacade {
 
     private final WeightRecordRepository weightRecordRepository;
 
-    public WeightService(WeightRecordRepository weightRecordRepository) {
+    public WeightFacade(WeightRecordRepository weightRecordRepository) {
         this.weightRecordRepository = weightRecordRepository;
     }
 

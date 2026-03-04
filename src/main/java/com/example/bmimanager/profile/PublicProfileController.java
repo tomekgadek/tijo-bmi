@@ -2,10 +2,9 @@ package com.example.bmimanager.profile;
 
 import com.example.bmimanager.profile.dto.PublicProfileDto;
 import com.example.bmimanager.user.domain.BmiUser;
-import com.example.bmimanager.profile.domain.WeightRecord;
+import com.example.bmimanager.weight.domain.WeightRecord;
 import com.example.bmimanager.bmi.domain.BmiFacade;
 import com.example.bmimanager.user.domain.UserService;
-import com.example.bmimanager.profile.domain.WeightService;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -22,12 +21,10 @@ import java.util.stream.Collectors;
 public class PublicProfileController {
 
     private final UserService userService;
-    private final WeightService weightService;
     private final BmiFacade bmiFacade;
 
-    public PublicProfileController(UserService userService, WeightService weightService, BmiFacade bmiFacade) {
+    public PublicProfileController(UserService userService, BmiFacade bmiFacade) {
         this.userService = userService;
-        this.weightService = weightService;
         this.bmiFacade = bmiFacade;
     }
 
@@ -37,8 +34,8 @@ public class PublicProfileController {
         List<PublicProfileDto> profiles = publicBmiUsers.stream()
                 .map(user -> new PublicProfileDto(
                         user,
-                        weightService.getCurrentWeight(user),
-                        weightService.getCurrentBMI(user)))
+                        bmiFacade.getUserCurrentWeight(user.getId()),
+                        bmiFacade.getUserCurrentBMI(user.getId())))
                 .collect(Collectors.toList());
 
         model.addAttribute("profiles", profiles);

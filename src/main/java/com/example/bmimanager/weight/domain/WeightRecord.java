@@ -1,4 +1,4 @@
-package com.example.bmimanager.profile.domain;
+package com.example.bmimanager.weight.domain;
 
 import com.example.bmimanager.user.domain.BmiUser;
 import com.fasterxml.jackson.annotation.JsonIgnore;
