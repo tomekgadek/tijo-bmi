@@ -3,7 +3,7 @@ package com.example.bmimanager.profile;
 import com.example.bmimanager.user.domain.BmiUser;
 import com.example.bmimanager.weight.domain.WeightRecord;
 import com.example.bmimanager.bmi.domain.BmiFacade;
-import com.example.bmimanager.user.domain.UserService;
+import com.example.bmimanager.user.domain.UserFacade;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -23,11 +23,11 @@ public class UserProfileController {
     private final Logger log = LoggerFactory.getLogger(UserProfileController.class);
 
     private final BmiFacade bmiFacade;
-    private final UserService userService;
+    private final UserFacade userFacade;
 
-    public UserProfileController(BmiFacade bmiFacade, UserService userService) {
+    public UserProfileController(BmiFacade bmiFacade, UserFacade userFacade) {
         this.bmiFacade = bmiFacade;
-        this.userService = userService;
+        this.userFacade = userFacade;
     }
 
     @GetMapping
@@ -36,7 +36,7 @@ public class UserProfileController {
             @RequestParam(required = false) Integer size,
             Authentication authentication, Model model) {
         String username = authentication.getName();
-        BmiUser bmiUser = userService.findByUsername(username).orElse(null);
+        BmiUser bmiUser = userFacade.findByUsername(username).orElse(null);
 
         if (bmiUser == null) {
             return "redirect:/login";
@@ -82,9 +82,9 @@ public class UserProfileController {
     @PostMapping("/update-pagination")
     public String updatePagination(@RequestParam Integer size, Authentication authentication) {
         String username = authentication.getName();
-        userService.findByUsername(username).ifPresent(user -> {
+        userFacade.findByUsername(username).ifPresent(user -> {
             user.setResultsPerPage(size);
-            userService.saveUser(user);
+            userFacade.saveUser(user);
         });
         return "redirect:/profile";
     }
@@ -95,7 +95,7 @@ public class UserProfileController {
             Authentication authentication) {
 
         String username = authentication.getName();
-        BmiUser bmiUser = userService.findByUsername(username).orElse(null);
+        BmiUser bmiUser = userFacade.findByUsername(username).orElse(null);
 
         if (bmiUser != null) {
             try {
@@ -123,7 +123,7 @@ public class UserProfileController {
             Authentication authentication) {
 
         String username = authentication.getName();
-        BmiUser bmiUser = userService.findByUsername(username).orElse(null);
+        BmiUser bmiUser = userFacade.findByUsername(username).orElse(null);
 
         if (bmiUser != null) {
             bmiFacade.updateUserProfile(
@@ -138,7 +138,7 @@ public class UserProfileController {
             @RequestParam(required = false) Integer page, Authentication authentication) {
 
         String username = authentication.getName();
-        BmiUser user = userService.findByUsername(username).orElse(null);
+        BmiUser user = userFacade.findByUsername(username).orElse(null);
 
         if (user != null) {
             bmiFacade.updateWeightRecord(user.getId(), recordId, weight);
@@ -152,7 +152,7 @@ public class UserProfileController {
             Authentication authentication) {
 
         String username = authentication.getName();
-        BmiUser user = userService.findByUsername(username).orElse(null);
+        BmiUser user = userFacade.findByUsername(username).orElse(null);
 
         if (user != null) {
             bmiFacade.deleteWeightRecord(user.getId(), recordId);

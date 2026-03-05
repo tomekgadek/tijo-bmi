@@ -4,7 +4,7 @@ import com.example.bmimanager.profile.dto.PublicProfileDto;
 import com.example.bmimanager.user.domain.BmiUser;
 import com.example.bmimanager.weight.domain.WeightRecord;
 import com.example.bmimanager.bmi.domain.BmiFacade;
-import com.example.bmimanager.user.domain.UserService;
+import com.example.bmimanager.user.domain.UserFacade;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -20,11 +20,11 @@ import java.util.stream.Collectors;
 @RequestMapping("/public")
 public class PublicProfileController {
 
-    private final UserService userService;
+    private final UserFacade userFacade;
     private final BmiFacade bmiFacade;
 
-    public PublicProfileController(UserService userService, BmiFacade bmiFacade) {
-        this.userService = userService;
+    public PublicProfileController(UserFacade userFacade, BmiFacade bmiFacade) {
+        this.userFacade = userFacade;
         this.bmiFacade = bmiFacade;
     }
 
@@ -48,7 +48,7 @@ public class PublicProfileController {
             @RequestParam(required = false) Integer page,
             @RequestParam(defaultValue = "25") int size,
             Model model) {
-        BmiUser bmiUser = userService.getUserById(userId);
+        BmiUser bmiUser = userFacade.getUserById(userId);
 
         if (bmiUser == null || !bmiUser.getIsPublic() || bmiUser.getIsBlocked()) {
             return "redirect:/public/profiles";

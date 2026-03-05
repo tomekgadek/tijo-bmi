@@ -3,7 +3,7 @@ package com.example.bmimanager.user;
 import com.example.bmimanager.user.domain.BmiUser;
 import com.example.bmimanager.weight.domain.WeightRecord;
 import com.example.bmimanager.bmi.domain.BmiFacade;
-import com.example.bmimanager.user.domain.UserService;
+import com.example.bmimanager.user.domain.UserFacade;
 import org.springframework.data.domain.Page;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
@@ -21,17 +21,17 @@ import java.util.stream.Collectors;
 @RequestMapping("/admin")
 public class AdminController {
 
-    private final UserService userService;
+    private final UserFacade userFacade;
     private final BmiFacade bmiFacade;
 
-    public AdminController(UserService userService, BmiFacade bmiFacade) {
-        this.userService = userService;
+    public AdminController(UserFacade userFacade, BmiFacade bmiFacade) {
+        this.userFacade = userFacade;
         this.bmiFacade = bmiFacade;
     }
 
     @GetMapping("/dashboard")
     public String adminDashboard(Authentication authentication, Model model) {
-        List<BmiUser> allBmiUsers = userService.getAllUsers();
+        List<BmiUser> allBmiUsers = userFacade.getAllUsers();
 
         List<String> usernames = allBmiUsers.stream().map(BmiUser::getUsername).collect(Collectors.toList());
         List<Double> currentBMIs = allBmiUsers.stream()
@@ -55,7 +55,7 @@ public class AdminController {
 
     @GetMapping("/users")
     public String viewUsers(Model model) {
-        List<BmiUser> users = userService.getAllUsers();
+        List<BmiUser> users = userFacade.getAllUsers();
         model.addAttribute("users", users);
         return "admin/users";
     }
@@ -66,7 +66,7 @@ public class AdminController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             Model model) {
-        BmiUser user = userService.getUserById(userId);
+        BmiUser user = userFacade.getUserById(userId);
         if (user == null) {
             return "redirect:/admin/users";
         }
@@ -101,12 +101,12 @@ public class AdminController {
 
     @GetMapping("/user/block/{userId}")
     public String blockUser(@PathVariable Long userId, Authentication authentication) {
-        userService.findByUsername(authentication.getName()).ifPresent(currentUser -> {
+        userFacade.findByUsername(authentication.getName()).ifPresent(currentUser -> {
             if (!currentUser.getId().equals(userId)) {
-                BmiUser user = userService.getUserById(userId);
+                BmiUser user = userFacade.getUserById(userId);
                 if (user != null) {
                     user.setIsBlocked(true);
-                    userService.saveUser(user);
+                    userFacade.saveUser(user);
                 }
             }
         });
@@ -115,12 +115,12 @@ public class AdminController {
 
     @GetMapping("/user/unblock/{userId}")
     public String unblockUser(@PathVariable Long userId, Authentication authentication) {
-        userService.findByUsername(authentication.getName()).ifPresent(currentUser -> {
+        userFacade.findByUsername(authentication.getName()).ifPresent(currentUser -> {
             if (!currentUser.getId().equals(userId)) {
-                BmiUser user = userService.getUserById(userId);
+                BmiUser user = userFacade.getUserById(userId);
                 if (user != null) {
                     user.setIsBlocked(false);
-                    userService.saveUser(user);
+                    userFacade.saveUser(user);
                 }
             }
         });
@@ -129,9 +129,9 @@ public class AdminController {
 
     @PostMapping("/user/delete/{userId}")
     public String deleteUser(@PathVariable Long userId, Authentication authentication) {
-        userService.findByUsername(authentication.getName()).ifPresent(currentUser -> {
+        userFacade.findByUsername(authentication.getName()).ifPresent(currentUser -> {
             if (!currentUser.getId().equals(userId)) {
-                userService.deleteUser(userId);
+                userFacade.deleteUser(userId);
             }
         });
         return "redirect:/admin/dashboard";

@@ -1,21 +1,19 @@
 package com.example.bmimanager.user.domain;
 
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.stereotype.Service;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.util.List;
 import java.util.Optional;
 
-@Service
-public class UserService {
+public class UserFacade {
 
     private final BmiUserRepository bmiUserRepository;
     private final BCryptPasswordEncoder passwordEncoder;
     private final MessageSource messageSource;
 
-    public UserService(BmiUserRepository bmiUserRepository, BCryptPasswordEncoder passwordEncoder,
+    public UserFacade(BmiUserRepository bmiUserRepository, BCryptPasswordEncoder passwordEncoder,
             MessageSource messageSource) {
         this.bmiUserRepository = bmiUserRepository;
         this.passwordEncoder = passwordEncoder;
