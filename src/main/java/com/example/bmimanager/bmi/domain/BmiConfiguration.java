@@ -8,7 +8,7 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class BmiConfiguration {
 
-    @Bean(name = "bmiFacadeService")
+    @Bean
     public BmiFacade bmiFacade(UserFacade userFacade, WeightFacade weightFacade) {
         return new BmiFacade(userFacade, weightFacade);
     }

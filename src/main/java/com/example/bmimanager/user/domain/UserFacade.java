@@ -20,7 +20,7 @@ public class UserFacade {
         this.messageSource = messageSource;
     }
 
-    public BmiUser registerUser(String username, String password) {
+    public UserDto registerUser(String username, String password) {
         if (bmiUserRepository.findByUsername(username).isPresent()) {
             throw new IllegalArgumentException(
                     messageSource.getMessage("validation.username.exists", null, LocaleContextHolder.getLocale()));
@@ -33,20 +33,20 @@ public class UserFacade {
                 .isBlocked(false)
                 .resultsPerPage(25)
                 .build();
-        return bmiUserRepository.save(bmiUser);
+        return mapToDto(bmiUserRepository.save(bmiUser));
     }
 
-    public Optional<BmiUser> findByUsername(String username) {
-        return bmiUserRepository.findByUsername(username);
+    public Optional<UserDto> findByUsername(String username) {
+        return bmiUserRepository.findByUsername(username).map(this::mapToDto);
     }
 
-    public BmiUser getUserById(Long id) {
-        return bmiUserRepository.findById(id).orElse(null);
+    public UserDto getUserById(Long id) {
+        return bmiUserRepository.findById(id).map(this::mapToDto).orElse(null);
     }
 
-    public BmiUser updateUser(Long userId, String firstName, String lastName, Double height, Boolean isPublic,
+    public UserDto updateUser(Long userId, String firstName, String lastName, Double height, Boolean isPublic,
             String motivationalQuote, String achievement) {
-        BmiUser user = getUserById(userId);
+        BmiUser user = bmiUserRepository.findById(userId).orElse(null);
         if (user == null) {
             throw new IllegalArgumentException(
                     messageSource.getMessage("validation.user.notfound", null, LocaleContextHolder.getLocale()));
@@ -59,22 +59,41 @@ public class UserFacade {
         user.setMotivationalQuote(motivationalQuote);
         user.setAchievement(achievement);
 
-        return bmiUserRepository.save(user);
+        return mapToDto(bmiUserRepository.save(user));
     }
 
-    public List<BmiUser> getAllUsers() {
-        return bmiUserRepository.findAll();
+    public List<UserDto> getAllUsers() {
+        return bmiUserRepository.findAll().stream().map(this::mapToDto).toList();
     }
 
-    public List<BmiUser> getPublicProfiles() {
-        return bmiUserRepository.findByIsPublicTrueAndIsBlockedFalse();
+    public List<UserDto> getPublicProfiles() {
+        return bmiUserRepository.findByIsPublicTrueAndIsBlockedFalse().stream().map(this::mapToDto).toList();
     }
 
-    public void saveUser(BmiUser user) {
-        bmiUserRepository.save(user);
+    public void saveUser(UserDto userDto) {
+        bmiUserRepository.findById(userDto.getId()).ifPresent(user -> {
+            user.setResultsPerPage(userDto.getResultsPerPage());
+            bmiUserRepository.save(user);
+        });
     }
 
     public void deleteUser(Long userId) {
         bmiUserRepository.deleteById(userId);
+    }
+
+    private UserDto mapToDto(BmiUser user) {
+        return UserDto.builder()
+                .id(user.getId())
+                .username(user.getUsername())
+                .password(user.getPassword())
+                .firstName(user.getFirstName())
+                .lastName(user.getLastName())
+                .height(user.getHeight())
+                .isPublic(user.getIsPublic())
+                .isBlocked(user.getIsBlocked())
+                .motivationalQuote(user.getMotivationalQuote())
+                .achievement(user.getAchievement())
+                .resultsPerPage(user.getResultsPerPage())
+                .build();
     }
 }

@@ -1,7 +1,7 @@
 package com.example.bmimanager.profile;
 
-import com.example.bmimanager.user.domain.BmiUser;
-import com.example.bmimanager.weight.domain.WeightRecord;
+import com.example.bmimanager.user.domain.UserDto;
+import com.example.bmimanager.weight.domain.WeightRecordDto;
 import com.example.bmimanager.bmi.domain.BmiFacade;
 import com.example.bmimanager.user.domain.UserFacade;
 import org.slf4j.Logger;
@@ -36,7 +36,7 @@ public class UserProfileController {
             @RequestParam(required = false) Integer size,
             Authentication authentication, Model model) {
         String username = authentication.getName();
-        BmiUser bmiUser = userFacade.findByUsername(username).orElse(null);
+        UserDto bmiUser = userFacade.findByUsername(username).orElse(null);
 
         if (bmiUser == null) {
             return "redirect:/login";
@@ -45,24 +45,25 @@ public class UserProfileController {
         int pageSize = (size != null) ? size : bmiUser.getResultsPerPage();
 
         if (page == null) {
-            Page<WeightRecord> firstPage = bmiFacade.getPaginatedUserWeightHistory(bmiUser.getId(), 0, pageSize);
+            Page<WeightRecordDto> firstPage = bmiFacade.getPaginatedUserWeightHistory(bmiUser.getId(), 0, pageSize);
             int lastPage = Math.max(0, firstPage.getTotalPages() - 1);
             return "redirect:/profile?page=" + lastPage;
         }
 
         BmiFacade.BMIStatistics stats = bmiFacade.getBMIStatistics(bmiUser.getId());
-        Page<WeightRecord> paginatedHistory = bmiFacade.getPaginatedUserWeightHistory(bmiUser.getId(), page, pageSize);
+        Page<WeightRecordDto> paginatedHistory = bmiFacade.getPaginatedUserWeightHistory(bmiUser.getId(), page,
+                pageSize);
 
-        List<WeightRecord> chronologicalSlice = paginatedHistory.getContent();
+        List<WeightRecordDto> chronologicalSlice = paginatedHistory.getContent();
 
         List<String> chartLabels = chronologicalSlice.stream()
                 .map(r -> r.getRecordDate().toString())
                 .collect(Collectors.toList());
         List<Double> chartData = chronologicalSlice.stream()
-                .map(WeightRecord::getWeight)
+                .map(WeightRecordDto::getWeight)
                 .collect(Collectors.toList());
         List<Long> chartRecordIds = chronologicalSlice.stream()
-                .map(WeightRecord::getId)
+                .map(WeightRecordDto::getId)
                 .collect(Collectors.toList());
 
         model.addAttribute("user", bmiUser);
@@ -83,8 +84,11 @@ public class UserProfileController {
     public String updatePagination(@RequestParam Integer size, Authentication authentication) {
         String username = authentication.getName();
         userFacade.findByUsername(username).ifPresent(user -> {
-            user.setResultsPerPage(size);
-            userFacade.saveUser(user);
+            UserDto updatedUser = UserDto.builder()
+                    .id(user.getId())
+                    .resultsPerPage(size)
+                    .build();
+            userFacade.saveUser(updatedUser);
         });
         return "redirect:/profile";
     }
@@ -95,7 +99,7 @@ public class UserProfileController {
             Authentication authentication) {
 
         String username = authentication.getName();
-        BmiUser bmiUser = userFacade.findByUsername(username).orElse(null);
+        UserDto bmiUser = userFacade.findByUsername(username).orElse(null);
 
         if (bmiUser != null) {
             try {
@@ -123,7 +127,7 @@ public class UserProfileController {
             Authentication authentication) {
 
         String username = authentication.getName();
-        BmiUser bmiUser = userFacade.findByUsername(username).orElse(null);
+        UserDto bmiUser = userFacade.findByUsername(username).orElse(null);
 
         if (bmiUser != null) {
             bmiFacade.updateUserProfile(
@@ -138,7 +142,7 @@ public class UserProfileController {
             @RequestParam(required = false) Integer page, Authentication authentication) {
 
         String username = authentication.getName();
-        BmiUser user = userFacade.findByUsername(username).orElse(null);
+        UserDto user = userFacade.findByUsername(username).orElse(null);
 
         if (user != null) {
             bmiFacade.updateWeightRecord(user.getId(), recordId, weight);
@@ -152,7 +156,7 @@ public class UserProfileController {
             Authentication authentication) {
 
         String username = authentication.getName();
-        BmiUser user = userFacade.findByUsername(username).orElse(null);
+        UserDto user = userFacade.findByUsername(username).orElse(null);
 
         if (user != null) {
             bmiFacade.deleteWeightRecord(user.getId(), recordId);

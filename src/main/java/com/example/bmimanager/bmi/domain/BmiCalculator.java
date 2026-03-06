@@ -1,6 +1,6 @@
 package com.example.bmimanager.bmi.domain;
 
-public final class BmiCalculator {
+final class BmiCalculator {
     private BmiCalculator() {
     }
 

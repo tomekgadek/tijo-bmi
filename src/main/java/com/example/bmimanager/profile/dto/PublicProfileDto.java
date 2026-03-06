@@ -1,6 +1,6 @@
 package com.example.bmimanager.profile.dto;
 
-import com.example.bmimanager.user.domain.BmiUser;
+import com.example.bmimanager.user.domain.UserDto;
 
-public record PublicProfileDto(BmiUser user, Double currentWeight, Double currentBMI) {
+public record PublicProfileDto(UserDto user, Double currentWeight, Double currentBMI) {
 }

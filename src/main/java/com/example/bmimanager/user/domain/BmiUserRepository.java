@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface BmiUserRepository extends JpaRepository<BmiUser, Long> {
+interface BmiUserRepository extends JpaRepository<BmiUser, Long> {
     Optional<BmiUser> findByUsername(String username);
 
     List<BmiUser> findByIsPublicTrueAndIsBlockedFalse();

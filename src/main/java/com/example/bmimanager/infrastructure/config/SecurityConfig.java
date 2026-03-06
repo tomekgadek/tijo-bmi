@@ -10,7 +10,7 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 @Configuration
 @EnableWebSecurity
-public class SecurityConfig {
+class SecurityConfig {
 
     @Bean
     public BCryptPasswordEncoder passwordEncoder() {

@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 @Aspect
 @Component
 @Slf4j
-public class LogAspect {
+class LogAspect {
 
     @Around("@annotation(com.example.bmimanager.infrastructure.log.Log)")
     public Object logExecutionTime(ProceedingJoinPoint joinPoint) throws Throwable {

@@ -1,6 +1,6 @@
 package com.example.bmimanager.infrastructure.authentication;
 
-import com.example.bmimanager.user.domain.BmiUser;
+import com.example.bmimanager.user.domain.UserDto;
 import com.example.bmimanager.user.domain.UserFacade;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -13,7 +13,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 @Configuration
-public class AuthenticationConfiguration {
+class AuthenticationConfiguration {
 
     private final UserFacade userFacade;
     private final BCryptPasswordEncoder passwordEncoder;
@@ -26,7 +26,7 @@ public class AuthenticationConfiguration {
     @Bean
     public UserDetailsService userDetailsService() {
         return username -> {
-            BmiUser user = userFacade.findByUsername(username)
+            UserDto user = userFacade.findByUsername(username)
                     .orElseThrow(() -> new org.springframework.security.core.userdetails.UsernameNotFoundException(
                             "Użytkownik nie znaleziony: " + username));
 

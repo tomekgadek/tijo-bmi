@@ -1,8 +1,8 @@
 package com.example.bmimanager.profile;
 
 import com.example.bmimanager.profile.dto.PublicProfileDto;
-import com.example.bmimanager.user.domain.BmiUser;
-import com.example.bmimanager.weight.domain.WeightRecord;
+import com.example.bmimanager.user.domain.UserDto;
+import com.example.bmimanager.weight.domain.WeightRecordDto;
 import com.example.bmimanager.bmi.domain.BmiFacade;
 import com.example.bmimanager.user.domain.UserFacade;
 import org.springframework.data.domain.Page;
@@ -30,7 +30,7 @@ public class PublicProfileController {
 
     @GetMapping("/profiles")
     public String viewPublicProfiles(Model model) {
-        List<BmiUser> publicBmiUsers = bmiFacade.getPublicProfiles();
+        List<UserDto> publicBmiUsers = bmiFacade.getPublicProfiles();
         List<PublicProfileDto> profiles = publicBmiUsers.stream()
                 .map(user -> new PublicProfileDto(
                         user,
@@ -48,30 +48,30 @@ public class PublicProfileController {
             @RequestParam(required = false) Integer page,
             @RequestParam(defaultValue = "25") int size,
             Model model) {
-        BmiUser bmiUser = userFacade.getUserById(userId);
+        UserDto bmiUser = userFacade.getUserById(userId);
 
-        if (bmiUser == null || !bmiUser.getIsPublic() || bmiUser.getIsBlocked()) {
+        if (bmiUser == null || !bmiUser.getIsPublic()) {
             return "redirect:/public/profiles";
         }
 
         if (page == null) {
-            Page<WeightRecord> firstPage = bmiFacade.getPaginatedUserWeightHistory(userId, 0, size);
+            Page<WeightRecordDto> firstPage = bmiFacade.getPaginatedUserWeightHistory(userId, 0, size);
             int lastPage = Math.max(0, firstPage.getTotalPages() - 1);
             return "redirect:/public/profile/" + userId + "?page=" + lastPage;
         }
 
-        Page<WeightRecord> paginatedHistory = bmiFacade.getPaginatedUserWeightHistory(userId, page, size);
+        Page<WeightRecordDto> paginatedHistory = bmiFacade.getPaginatedUserWeightHistory(userId, page, size);
         BmiFacade.BMIStatistics stats = bmiFacade.getBMIStatistics(userId);
 
-        List<WeightRecord> currentSlice = paginatedHistory.getContent();
+        List<WeightRecordDto> currentSlice = paginatedHistory.getContent();
         List<String> chartLabels = currentSlice.stream()
                 .map(r -> r.getRecordDate().toString())
                 .collect(Collectors.toList());
         List<Double> chartData = currentSlice.stream()
-                .map(WeightRecord::getWeight)
+                .map(WeightRecordDto::getWeight)
                 .collect(Collectors.toList());
         List<Long> chartRecordIds = currentSlice.stream()
-                .map(WeightRecord::getId)
+                .map(WeightRecordDto::getId)
                 .collect(Collectors.toList());
 
         model.addAttribute("profileUser", bmiUser);

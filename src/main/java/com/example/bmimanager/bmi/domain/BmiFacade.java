@@ -1,16 +1,14 @@
 package com.example.bmimanager.bmi.domain;
 
-import com.example.bmimanager.user.domain.BmiUser;
+import com.example.bmimanager.user.domain.UserDto;
 import com.example.bmimanager.user.domain.UserFacade;
 import com.example.bmimanager.weight.domain.WeightFacade;
-import com.example.bmimanager.weight.domain.WeightRecord;
+import com.example.bmimanager.weight.domain.WeightRecordDto;
 import org.springframework.data.domain.Page;
-import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.List;
 
-@Service
 public class BmiFacade {
 
     private final UserFacade userFacade;
@@ -21,56 +19,50 @@ public class BmiFacade {
         this.weightFacade = weightFacade;
     }
 
-    public BmiUser registerUser(String username, String password) {
+    public UserDto registerUser(String username, String password) {
         return userFacade.registerUser(username, password);
     }
 
     public Double getUserCurrentBMI(Long userId) {
-        BmiUser bmiUser = userFacade.getUserById(userId);
-        return bmiUser != null ? weightFacade.getCurrentBMI(bmiUser) : null;
+        UserDto user = userFacade.getUserById(userId);
+        if (user == null)
+            return null;
+        Double currentWeight = weightFacade.getCurrentWeight(userId);
+        return BmiCalculator.calculate(currentWeight, user.getHeight());
     }
 
     public Double getUserCurrentWeight(Long userId) {
-        BmiUser bmiUser = userFacade.getUserById(userId);
-        return bmiUser != null ? weightFacade.getCurrentWeight(bmiUser) : null;
+        return weightFacade.getCurrentWeight(userId);
     }
 
-    public List<WeightRecord> getUserWeightHistory(Long userId) {
-        BmiUser bmiUser = userFacade.getUserById(userId);
-        return bmiUser != null ? weightFacade.getUserWeightRecords(bmiUser) : List.of();
+    public List<WeightRecordDto> getUserWeightHistory(Long userId) {
+        return weightFacade.getUserWeightRecords(userId);
     }
 
-    public Page<WeightRecord> getPaginatedUserWeightHistory(Long userId, int page, int size) {
-        BmiUser bmiUser = userFacade.getUserById(userId);
-        return bmiUser != null ? weightFacade.getPaginatedUserWeightRecords(bmiUser, page, size) : Page.empty();
+    public Page<WeightRecordDto> getPaginatedUserWeightHistory(Long userId, int page, int size) {
+        return weightFacade.getPaginatedUserWeightRecords(userId, page, size);
     }
 
-    public WeightRecord recordWeight(Long userId, Double weight) {
-        BmiUser user = userFacade.getUserById(userId);
-        if (user == null)
-            throw new IllegalArgumentException("Użytkownik nie znaleziony");
-        return weightFacade.addWeightRecord(user, weight);
+    public WeightRecordDto recordWeight(Long userId, Double weight) {
+        return weightFacade.addWeightRecord(userId, weight);
     }
 
-    public WeightRecord recordWeight(Long userId, Double weight, LocalDate recordDate) {
-        BmiUser user = userFacade.getUserById(userId);
-        if (user == null)
-            throw new IllegalArgumentException("Użytkownik nie znaleziony");
-        return weightFacade.addWeightRecord(user, weight, recordDate);
+    public WeightRecordDto recordWeight(Long userId, Double weight, LocalDate recordDate) {
+        return weightFacade.addWeightRecord(userId, weight, recordDate);
     }
 
     public BMIStatistics getBMIStatistics(Long userId) {
-        BmiUser user = userFacade.getUserById(userId);
+        UserDto user = userFacade.getUserById(userId);
         if (user == null)
             return BMIStatistics.empty();
 
-        Double currentWeight = weightFacade.getCurrentWeight(user);
-        Double currentBMI = weightFacade.getCurrentBMI(user);
-        Double lowestWeight = weightFacade.getLowestWeight(user);
-        Double highestWeight = weightFacade.getHighestWeight(user);
+        Double currentWeight = weightFacade.getCurrentWeight(userId);
+        Double currentBMI = BmiCalculator.calculate(currentWeight, user.getHeight());
+        Double lowestWeight = weightFacade.getLowestWeight(userId);
+        Double highestWeight = weightFacade.getHighestWeight(userId);
 
-        List<WeightRecord> records = weightFacade.getUserWeightRecords(user);
-        WeightRecord latestRecord = records.isEmpty() ? null : records.get(records.size() - 1);
+        List<WeightRecordDto> records = weightFacade.getUserWeightRecords(userId);
+        WeightRecordDto latestRecord = records.isEmpty() ? null : records.get(records.size() - 1);
 
         return new BMIStatistics(
                 currentWeight,
@@ -94,25 +86,25 @@ public class BmiFacade {
         return BMICategory.OBESITY;
     }
 
-    public BmiUser updateUserProfile(Long userId, String firstName, String lastName, Double height,
+    public UserDto updateUserProfile(Long userId, String firstName, String lastName, Double height,
             Boolean isPublic, String motivationalQuote, String achievement) {
         return userFacade.updateUser(userId, firstName, lastName, height, isPublic, motivationalQuote, achievement);
     }
 
-    public List<BmiUser> getPublicProfiles() {
+    public List<UserDto> getPublicProfiles() {
         return userFacade.getPublicProfiles();
     }
 
     public void deleteWeightRecord(Long userId, Long recordId) {
-        WeightRecord record = weightFacade.getWeightRecordById(recordId);
-        if (record != null && record.getBmiUser().getId().equals(userId)) {
+        WeightRecordDto record = weightFacade.getWeightRecordById(recordId);
+        if (record != null && record.getUserId().equals(userId)) {
             weightFacade.deleteWeightRecord(recordId);
         }
     }
 
-    public WeightRecord updateWeightRecord(Long userId, Long recordId, Double weight) {
-        WeightRecord record = weightFacade.getWeightRecordById(recordId);
-        if (record != null && record.getBmiUser().getId().equals(userId)) {
+    public WeightRecordDto updateWeightRecord(Long userId, Long recordId, Double weight) {
+        WeightRecordDto record = weightFacade.getWeightRecordById(recordId);
+        if (record != null && record.getUserId().equals(userId)) {
             return weightFacade.updateWeightRecord(recordId, weight, record.getRecordDate());
         }
         return null;
@@ -125,10 +117,10 @@ public class BmiFacade {
         private final Double highestWeight;
         private final Integer recordCount;
         private final BMICategory category;
-        private final WeightRecord latestRecord;
+        private final WeightRecordDto latestRecord;
 
         public BMIStatistics(Double currentWeight, Double currentBMI, Double lowestWeight, Double highestWeight,
-                Integer recordCount, BMICategory category, WeightRecord latestRecord) {
+                Integer recordCount, BMICategory category, WeightRecordDto latestRecord) {
             this.currentWeight = currentWeight;
             this.currentBMI = currentBMI;
             this.lowestWeight = lowestWeight;
@@ -150,7 +142,7 @@ public class BmiFacade {
             return currentBMI;
         }
 
-        public WeightRecord getLatestRecord() {
+        public WeightRecordDto getLatestRecord() {
             return latestRecord;
         }
 

@@ -3,7 +3,7 @@ package com.example.bmimanager.password;
 import org.springframework.stereotype.Service;
 
 @Service
-public class StrengthValidator {
+class StrengthValidator {
     public PasswordOutcome validate(String password) {
         if (password == null || password.length() < 8) {
             return PasswordOutcome.TOO_SHORT;
