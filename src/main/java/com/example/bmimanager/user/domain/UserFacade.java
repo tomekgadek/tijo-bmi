@@ -33,15 +33,15 @@ public class UserFacade {
                 .isBlocked(false)
                 .resultsPerPage(25)
                 .build();
-        return mapToDto(bmiUserRepository.save(bmiUser));
+        return bmiUserRepository.save(bmiUser).dto();
     }
 
     public Optional<UserDto> findByUsername(String username) {
-        return bmiUserRepository.findByUsername(username).map(this::mapToDto);
+        return bmiUserRepository.findByUsername(username).map(BmiUser::dto);
     }
 
     public UserDto getUserById(Long id) {
-        return bmiUserRepository.findById(id).map(this::mapToDto).orElse(null);
+        return bmiUserRepository.findById(id).map(BmiUser::dto).orElse(null);
     }
 
     public UserDto updateUser(Long userId, String firstName, String lastName, Double height, Boolean isPublic,
@@ -59,15 +59,15 @@ public class UserFacade {
         user.setMotivationalQuote(motivationalQuote);
         user.setAchievement(achievement);
 
-        return mapToDto(bmiUserRepository.save(user));
+        return bmiUserRepository.save(user).dto();
     }
 
     public List<UserDto> getAllUsers() {
-        return bmiUserRepository.findAll().stream().map(this::mapToDto).toList();
+        return bmiUserRepository.findAll().stream().map(BmiUser::dto).toList();
     }
 
     public List<UserDto> getPublicProfiles() {
-        return bmiUserRepository.findByIsPublicTrueAndIsBlockedFalse().stream().map(this::mapToDto).toList();
+        return bmiUserRepository.findByIsPublicTrueAndIsBlockedFalse().stream().map(BmiUser::dto).toList();
     }
 
     public void saveUser(UserDto userDto) {
@@ -79,21 +79,5 @@ public class UserFacade {
 
     public void deleteUser(Long userId) {
         bmiUserRepository.deleteById(userId);
-    }
-
-    private UserDto mapToDto(BmiUser user) {
-        return UserDto.builder()
-                .id(user.getId())
-                .username(user.getUsername())
-                .password(user.getPassword())
-                .firstName(user.getFirstName())
-                .lastName(user.getLastName())
-                .height(user.getHeight())
-                .isPublic(user.getIsPublic())
-                .isBlocked(user.getIsBlocked())
-                .motivationalQuote(user.getMotivationalQuote())
-                .achievement(user.getAchievement())
-                .resultsPerPage(user.getResultsPerPage())
-                .build();
     }
 }

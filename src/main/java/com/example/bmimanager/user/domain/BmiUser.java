@@ -64,4 +64,20 @@ class BmiUser {
             this.resultsPerPage = resultsPerPage;
         }
     }
+
+    UserDto dto() {
+        return UserDto.builder()
+                .id(id)
+                .username(username)
+                .password(password)
+                .firstName(firstName)
+                .lastName(lastName)
+                .height(height)
+                .isPublic(isPublic)
+                .isBlocked(isBlocked)
+                .motivationalQuote(motivationalQuote)
+                .achievement(achievement)
+                .resultsPerPage(resultsPerPage)
+                .build();
+    }
 }

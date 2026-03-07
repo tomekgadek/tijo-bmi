@@ -21,7 +21,7 @@ public class WeightFacade {
                 .weight(weight)
                 .recordDate(LocalDate.now())
                 .build();
-        return mapToDto(weightRecordRepository.save(record));
+        return weightRecordRepository.save(record).dto();
     }
 
     public WeightRecordDto addWeightRecord(Long userId, Double weight, LocalDate recordDate) {
@@ -30,16 +30,16 @@ public class WeightFacade {
                 .weight(weight)
                 .recordDate(recordDate)
                 .build();
-        return mapToDto(weightRecordRepository.save(record));
+        return weightRecordRepository.save(record).dto();
     }
 
     public List<WeightRecordDto> getUserWeightRecords(Long userId) {
-        return weightRecordRepository.findByUserIdOrderByRecordDateAsc(userId).stream().map(this::mapToDto).toList();
+        return weightRecordRepository.findByUserIdOrderByRecordDateAsc(userId).stream().map(WeightRecord::dto).toList();
     }
 
     public Page<WeightRecordDto> getPaginatedUserWeightRecords(Long userId, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
-        return weightRecordRepository.findByUserIdOrderByRecordDateAsc(userId, pageable).map(this::mapToDto);
+        return weightRecordRepository.findByUserIdOrderByRecordDateAsc(userId, pageable).map(WeightRecord::dto);
     }
 
     public void deleteWeightRecord(Long recordId) {
@@ -47,7 +47,7 @@ public class WeightFacade {
     }
 
     public WeightRecordDto getWeightRecordById(Long recordId) {
-        return weightRecordRepository.findById(recordId).map(this::mapToDto).orElse(null);
+        return weightRecordRepository.findById(recordId).map(WeightRecord::dto).orElse(null);
     }
 
     public Double getCurrentWeight(Long userId) {
@@ -61,7 +61,7 @@ public class WeightFacade {
         if (record != null) {
             record.setWeight(weight);
             record.setRecordDate(recordDate);
-            return mapToDto(weightRecordRepository.save(record));
+            return weightRecordRepository.save(record).dto();
         }
         return null;
     }
@@ -80,15 +80,5 @@ public class WeightFacade {
                 .map(WeightRecord::getWeight)
                 .max(Double::compare)
                 .orElse(null);
-    }
-
-    private WeightRecordDto mapToDto(WeightRecord record) {
-        return WeightRecordDto.builder()
-                .id(record.getId())
-                .userId(record.getUserId())
-                .weight(record.getWeight())
-                .recordDate(record.getRecordDate())
-                .createdAt(record.getCreatedAt())
-                .build();
     }
 }

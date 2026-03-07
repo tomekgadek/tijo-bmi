@@ -37,4 +37,14 @@ class WeightRecord {
         }
     }
 
+    WeightRecordDto dto() {
+        return WeightRecordDto.builder()
+                .id(id)
+                .userId(userId)
+                .weight(weight)
+                .recordDate(recordDate)
+                .createdAt(createdAt)
+                .build();
+    }
+
 }
