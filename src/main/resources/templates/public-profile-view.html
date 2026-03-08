@@ -55,10 +55,8 @@
             <div class="chart-container">
                 <canvas id="weight-chart"></canvas>
             </div>
-        </div>
 
-        <div class="card" th:if="${totalItems > 0}">
-            <div class="pagination-container">
+            <div class="pagination-container" th:if="${totalItems > 0}" style="margin-top: 1.5rem;">
                 <div class="pagination-info"
                     th:text="#{public.view.pagination.info(${currentPage * pageSize + 1}, ${(currentPage + 1) * pageSize > totalItems ? totalItems : (currentPage + 1) * pageSize}, ${totalItems})}">
                     Pomiary <span></span> -
