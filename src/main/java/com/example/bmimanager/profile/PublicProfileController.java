@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Controller
@@ -34,8 +35,8 @@ public class PublicProfileController {
         List<PublicProfileDto> profiles = publicBmiUsers.stream()
                 .map(user -> new PublicProfileDto(
                         user,
-                        bmiFacade.getUserCurrentWeight(user.getId()),
-                        bmiFacade.getUserCurrentBMI(user.getId())))
+                        bmiFacade.getUserCurrentWeight(user.getId()).orElse(null),
+                        bmiFacade.getUserCurrentBMI(user.getId()).orElse(null)))
                 .collect(Collectors.toList());
 
         model.addAttribute("profiles", profiles);
@@ -48,11 +49,11 @@ public class PublicProfileController {
             @RequestParam(required = false) Integer page,
             @RequestParam(defaultValue = "25") int size,
             Model model) {
-        UserDto bmiUser = userFacade.getUserById(userId);
-
-        if (bmiUser == null || !bmiUser.getIsPublic()) {
+        Optional<UserDto> userOpt = userFacade.getUserById(userId).filter(UserDto::getIsPublic);
+        if (userOpt.isEmpty()) {
             return "redirect:/public/profiles";
         }
+        UserDto bmiUser = userOpt.get();
 
         if (page == null) {
             Page<WeightRecordDto> firstPage = bmiFacade.getPaginatedUserWeightHistory(userId, 0, size);

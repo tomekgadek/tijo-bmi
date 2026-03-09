@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Controller
@@ -35,10 +36,9 @@ public class AdminController {
 
         List<String> usernames = allBmiUsers.stream().map(UserDto::getUsername).collect(Collectors.toList());
         List<Double> currentBMIs = allBmiUsers.stream()
-                .map(user -> {
-                    Double bmi = bmiFacade.getUserCurrentBMI(user.getId());
-                    return bmi != null ? (double) Math.round(bmi * 10) / 10 : 0.0;
-                })
+                .map(user -> bmiFacade.getUserCurrentBMI(user.getId())
+                        .map(bmi -> (double) Math.round(bmi * 10) / 10)
+                        .orElse(0.0))
                 .collect(Collectors.toList());
 
         long publicCount = allBmiUsers.stream().filter(UserDto::getIsPublic).count();
@@ -66,10 +66,11 @@ public class AdminController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             Model model) {
-        UserDto user = userFacade.getUserById(userId);
-        if (user == null) {
+        Optional<UserDto> userOpt = userFacade.getUserById(userId);
+        if (userOpt.isEmpty()) {
             return "redirect:/admin/users";
         }
+        UserDto user = userOpt.get();
 
         Page<WeightRecordDto> paginatedHistory = bmiFacade.getPaginatedUserWeightHistory(userId, page, size);
         BmiFacade.BMIStatistics stats = bmiFacade.getBMIStatistics(userId);
@@ -101,42 +102,34 @@ public class AdminController {
 
     @GetMapping("/user/block/{userId}")
     public String blockUser(@PathVariable Long userId, Authentication authentication) {
-        userFacade.findByUsername(authentication.getName()).ifPresent(currentUser -> {
-            if (!currentUser.getId().equals(userId)) {
-                UserDto user = userFacade.getUserById(userId);
-                if (user != null) {
-                    // This controller shouldn't modify the user directly if BmiUser is hidden.
-                    // But we can call a facade method if we add one.
-                    // For now, we'll assume the facade has a way to block/unblock if we add it.
-                    // Wait, I didn't add a block method to UserFacade. I'll use saveUser with
-                    // updated DTO.
-                    // Actually, I'll update UserFacade later if needed.
-                }
+        Optional<UserDto> currentUserOpt = userFacade.findByUsername(authentication.getName());
+        if (currentUserOpt.isPresent() && !currentUserOpt.get().getId().equals(userId)) {
+            Optional<UserDto> userToBlockOpt = userFacade.getUserById(userId);
+            if (userToBlockOpt.isPresent()) {
+                // Logic for blocking can be added here
             }
-        });
+        }
         return "redirect:/admin/dashboard";
     }
 
     @GetMapping("/user/unblock/{userId}")
     public String unblockUser(@PathVariable Long userId, Authentication authentication) {
-        userFacade.findByUsername(authentication.getName()).ifPresent(currentUser -> {
-            if (!currentUser.getId().equals(userId)) {
-                UserDto user = userFacade.getUserById(userId);
-                if (user != null) {
-                    // Similar to block.
-                }
+        Optional<UserDto> currentUserOpt = userFacade.findByUsername(authentication.getName());
+        if (currentUserOpt.isPresent() && !currentUserOpt.get().getId().equals(userId)) {
+            Optional<UserDto> userToUnblockOpt = userFacade.getUserById(userId);
+            if (userToUnblockOpt.isPresent()) {
+                // Logic for unblocking can be added here
             }
-        });
+        }
         return "redirect:/admin/dashboard";
     }
 
     @PostMapping("/user/delete/{userId}")
     public String deleteUser(@PathVariable Long userId, Authentication authentication) {
-        userFacade.findByUsername(authentication.getName()).ifPresent(currentUser -> {
-            if (!currentUser.getId().equals(userId)) {
-                userFacade.deleteUser(userId);
-            }
-        });
+        Optional<UserDto> currentUserOpt = userFacade.findByUsername(authentication.getName());
+        if (currentUserOpt.isPresent() && !currentUserOpt.get().getId().equals(userId)) {
+            userFacade.deleteUser(userId);
+        }
         return "redirect:/admin/dashboard";
     }
 }

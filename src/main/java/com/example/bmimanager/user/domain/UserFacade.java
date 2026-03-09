@@ -40,17 +40,15 @@ public class UserFacade {
         return bmiUserRepository.findByUsername(username).map(BmiUser::dto);
     }
 
-    public UserDto getUserById(Long id) {
-        return bmiUserRepository.findById(id).map(BmiUser::dto).orElse(null);
+    public Optional<UserDto> getUserById(Long id) {
+        return bmiUserRepository.findById(id).map(BmiUser::dto);
     }
 
     public UserDto updateUser(Long userId, String firstName, String lastName, Double height, Boolean isPublic,
             String motivationalQuote, String achievement) {
-        BmiUser user = bmiUserRepository.findById(userId).orElse(null);
-        if (user == null) {
-            throw new IllegalArgumentException(
-                    messageSource.getMessage("validation.user.notfound", null, LocaleContextHolder.getLocale()));
-        }
+        BmiUser user = bmiUserRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException(
+                        messageSource.getMessage("validation.user.notfound", null, LocaleContextHolder.getLocale())));
 
         user.setFirstName(firstName);
         user.setLastName(lastName);

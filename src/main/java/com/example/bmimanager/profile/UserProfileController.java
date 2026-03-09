@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Controller
@@ -36,11 +37,10 @@ public class UserProfileController {
             @RequestParam(required = false) Integer size,
             Authentication authentication, Model model) {
         String username = authentication.getName();
-        UserDto bmiUser = userFacade.findByUsername(username).orElse(null);
-
-        if (bmiUser == null) {
+        Optional<UserDto> userOpt = userFacade.findByUsername(username);
+        if (userOpt.isEmpty())
             return "redirect:/login";
-        }
+        UserDto bmiUser = userOpt.get();
 
         int pageSize = (size != null) ? size : bmiUser.getResultsPerPage();
 
@@ -53,7 +53,6 @@ public class UserProfileController {
         BmiFacade.BMIStatistics stats = bmiFacade.getBMIStatistics(bmiUser.getId());
         Page<WeightRecordDto> paginatedHistory = bmiFacade.getPaginatedUserWeightHistory(bmiUser.getId(), page,
                 pageSize);
-
         List<WeightRecordDto> chronologicalSlice = paginatedHistory.getContent();
 
         List<String> chartLabels = chronologicalSlice.stream()
@@ -99,9 +98,7 @@ public class UserProfileController {
             Authentication authentication) {
 
         String username = authentication.getName();
-        UserDto bmiUser = userFacade.findByUsername(username).orElse(null);
-
-        if (bmiUser != null) {
+        userFacade.findByUsername(username).ifPresent(bmiUser -> {
             try {
                 if (recordDate != null && !recordDate.isEmpty()) {
                     bmiFacade.recordWeight(bmiUser.getId(), weight, LocalDate.parse(recordDate));
@@ -111,7 +108,7 @@ public class UserProfileController {
             } catch (Exception e) {
                 log.error(e.getMessage());
             }
-        }
+        });
 
         return page != null ? "redirect:/profile?page=" + page : "redirect:/profile";
     }
@@ -127,12 +124,8 @@ public class UserProfileController {
             Authentication authentication) {
 
         String username = authentication.getName();
-        UserDto bmiUser = userFacade.findByUsername(username).orElse(null);
-
-        if (bmiUser != null) {
-            bmiFacade.updateUserProfile(
-                    bmiUser.getId(), firstName, lastName, height, isPublic, motivationalQuote, achievement);
-        }
+        userFacade.findByUsername(username).ifPresent(bmiUser -> bmiFacade.updateUserProfile(
+                bmiUser.getId(), firstName, lastName, height, isPublic, motivationalQuote, achievement));
 
         return "redirect:/profile";
     }
@@ -142,11 +135,8 @@ public class UserProfileController {
             @RequestParam(required = false) Integer page, Authentication authentication) {
 
         String username = authentication.getName();
-        UserDto user = userFacade.findByUsername(username).orElse(null);
-
-        if (user != null) {
-            bmiFacade.updateWeightRecord(user.getId(), recordId, weight);
-        }
+        userFacade.findByUsername(username)
+                .ifPresent(user -> bmiFacade.updateWeightRecord(user.getId(), recordId, weight));
 
         return page != null ? "redirect:/profile?page=" + page : "redirect:/profile";
     }
@@ -156,11 +146,7 @@ public class UserProfileController {
             Authentication authentication) {
 
         String username = authentication.getName();
-        UserDto user = userFacade.findByUsername(username).orElse(null);
-
-        if (user != null) {
-            bmiFacade.deleteWeightRecord(user.getId(), recordId);
-        }
+        userFacade.findByUsername(username).ifPresent(user -> bmiFacade.deleteWeightRecord(user.getId(), recordId));
 
         return page != null ? "redirect:/profile?page=" + page : "redirect:/profile";
     }

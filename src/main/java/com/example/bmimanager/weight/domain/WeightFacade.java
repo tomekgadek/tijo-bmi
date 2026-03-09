@@ -6,6 +6,7 @@ import org.springframework.data.domain.Pageable;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 public class WeightFacade {
 
@@ -46,39 +47,34 @@ public class WeightFacade {
         weightRecordRepository.deleteById(recordId);
     }
 
-    public WeightRecordDto getWeightRecordById(Long recordId) {
-        return weightRecordRepository.findById(recordId).map(WeightRecord::dto).orElse(null);
+    public Optional<WeightRecordDto> getWeightRecordById(Long recordId) {
+        return weightRecordRepository.findById(recordId).map(WeightRecord::dto);
     }
 
-    public Double getCurrentWeight(Long userId) {
+    public Optional<Double> getCurrentWeight(Long userId) {
         return weightRecordRepository.findTopByUserIdOrderByRecordDateDesc(userId)
-                .map(WeightRecord::getWeight)
-                .orElse(null);
+                .map(WeightRecord::getWeight);
     }
 
-    public WeightRecordDto updateWeightRecord(Long recordId, Double weight, LocalDate recordDate) {
-        WeightRecord record = weightRecordRepository.findById(recordId).orElse(null);
-        if (record != null) {
+    public Optional<WeightRecordDto> updateWeightRecord(Long recordId, Double weight, LocalDate recordDate) {
+        return weightRecordRepository.findById(recordId).map(record -> {
             record.setWeight(weight);
             record.setRecordDate(recordDate);
             return weightRecordRepository.save(record).dto();
-        }
-        return null;
+        });
     }
 
-    public Double getLowestWeight(Long userId) {
+    public Optional<Double> getLowestWeight(Long userId) {
         List<WeightRecord> records = weightRecordRepository.findByUserIdOrderByRecordDateAsc(userId);
         return records.stream()
                 .map(WeightRecord::getWeight)
-                .min(Double::compare)
-                .orElse(null);
+                .min(Double::compare);
     }
 
-    public Double getHighestWeight(Long userId) {
+    public Optional<Double> getHighestWeight(Long userId) {
         List<WeightRecord> records = weightRecordRepository.findByUserIdOrderByRecordDateAsc(userId);
         return records.stream()
                 .map(WeightRecord::getWeight)
-                .max(Double::compare)
-                .orElse(null);
+                .max(Double::compare);
     }
 }

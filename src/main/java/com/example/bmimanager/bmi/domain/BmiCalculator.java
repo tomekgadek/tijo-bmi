@@ -1,14 +1,16 @@
 package com.example.bmimanager.bmi.domain;
 
+import java.util.Optional;
+
 final class BmiCalculator {
     private BmiCalculator() {
     }
 
-    public static Double calculate(Double weightKg, Double heightCm) {
+    public static Optional<Double> calculate(Double weightKg, Double heightCm) {
         if (weightKg == null || heightCm == null || heightCm <= 0) {
-            return null;
+            return Optional.empty();
         }
         double heightInMeters = heightCm / 100.0;
-        return weightKg / (heightInMeters * heightInMeters);
+        return Optional.of(weightKg / (heightInMeters * heightInMeters));
     }
 }
