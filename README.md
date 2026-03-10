@@ -1,7 +1,5 @@
 # BMI Manager
 
-## Okładka projektu
-
 ![bmi](./cover/bmi.png)
 
 ## Opis projektu
