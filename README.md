@@ -1,120 +1,43 @@
-# BMI Manager - Mini aplikacja do zarządzania BMI
+# BMI Manager
 
-Aplikacja webowa do zarządzania indeksem masy ciała (BMI), śleddzenia wagi i dzielenia się osiągnięciami zdrowotnymi z całą społecznością.
+## Okładka projektu
 
+![bmi](./cover/bmi.png)
 
-## Funkcjonalności
+## Opis projektu
 
-### Dla Użytkowników
-- **Rejestracja i Logowanie** - System uwierzytelniania z Basic Authentication.
-- **Zarządzanie Profilem** - Edycja danych osobowych, wzrostu, celów i motywujących cytatów.
-- **Śledzenie Wagi** - Dodawanie, edytowanie i usuwanie wpisów wagi.
-- **Statystyki BMI** - Automatyczne obliczanie BMI na podstawie wagi i wzrostu.
-- **Historia i Paginacja** - Przeglądanie historii pomiarów z wygodną paginacją.
-- **Wykresy** - Interaktywna wizualizacja zmian wagi (Chart.js).
-- **Profile Publiczne** - Opcja udostępnienia swojego postępu całej społeczności.
-- **Internacjonalizacja (i18n)** - Pełne wsparcie dla języka polskiego i angielskiego.
+**BMI Manager** to intuicyjna aplikacja internetowa stworzona dla osób pragnących w świadomy sposób kontrolować swoją masę ciała.
 
-### Dla Administratorów
-- **Dashboard** - Przegląd aktywności użytkowników i statystyk systemu.
-- **Zarządzanie Użytkownikami** - Szczegółowy podgląd profilu każdego użytkownika.
-- **Statusy Kont** - Możliwość blokowania i odblokowywania użytkowników.
+**Wskaźnik BMI** to matematyczny wzór, który na podstawie proporcji między wagą i wzrostem osoby pozwala określić, w którym przedziale kategorii wagowych (m.in. niedowaga, norma, nadwaga, otyłość) klasyfikuje się użytkownik. 
 
-### Strony Publiczne
-- **Strona Główna** - Nowoczesny landing page zachęcający do dbania o zdrowie.
-- **Lista Profili** - Przeglądanie publicznych profili innych użytkowników.
-- **Widok Profilu** - Dostęp do wykresów i historii użytkowników, którzy zdecydowali się na upublicznienie danych.
+**Funkcjonalność aplikacji** opiera się na prostym i przejrzystym kokpicie, gdzie każdy użytkownik może rejestrować codzienne wyniki wagi, śledzić postępy za pomocą generowanych dynamicznie wykresów, udostępniać swój profil innym oraz przeglądać statystyki wbudowane w panel. Umożliwiono także możliwość przeglądania udostępnionych profili publicznych oraz funkcje zarządzania platformą z poziomu administratora. 
 
-## Wymagania
+## Uruchomienie projektu
 
-- **Java 17+**
-- **Maven 3.6+**
-- **Przeglądarka internetowa**
-
-## Instalacja
-
-### 1. Klonowanie Repozytorium
-```bash
-git clone https://github.com/tomekgadek/tijo-bmi.git
-cd tijo-bmi
-```
-
-### 2. Budowanie Projektu
-```bash
-mvn clean install
-```
-
-## Uruchomienie
-
-### Uruchomienie z Linii Poleceń
 ```bash
 mvn spring-boot:run
 ```
 
-### Dostęp do Aplikacji
-Otwórz przeglądarkę i wejdź na: `http://localhost:8080`
+Aplikacja będzie gotowa do użycia pod adresem: `http://localhost:8080/`
 
-## Dane Testowe
+## Technologie użyte w projekcie
 
-Aplikacja automatycznie ładuje dane testowe przy starcie. Dostępne konta:
+- Java 21
+- Maven 3
+- Spring Boot
+- Spring Security
+- Spring Data JPA (Hibernate)
+- H2 Database
+- Thymeleaf
+- HTML, CSS, JavaScript
 
-- **Admin:** `admin` / `admin123`
-- **Użytkownik Demo:** `demo` / `demo123`
-- **Użytkownik Tomek:** `tomek` / `tomek123`
+## Dalsze etapy rozwoju
 
-## Architektura
-
-### Wzorzec Fasada (Facade Pattern)
-Aplikacja implementuje wzorzec **Fasada** w warstwie serwisów, agregując logikę biznesową i ukrywając złożoność podsystemów przed kontrolerami:
-- `BMIFacadeService` - Główny punkt styku dla operacji związanych z BMI i statystykami.
-- `UserService` - Zarządzanie kontami i profilami.
-- `WeightService` - Logika pomiarów i obliczeń.
-
-
-## Technologie
-
-### Backend
-- **Spring Boot 3.1.5**
-- **Spring Security** - Uwierzytelnianie i autoryzacja (form-login, basic-auth).
-- **Spring Data JPA** - Komunikacja z bazą danych (H2/Hibernate).
-- **Spring MessageSource** - Obsługa wielu języków (i18n).
-- **Lombok** - Redukcja kodu boilerplate.
-
-### Frontend
-- **Thymeleaf** - Silnik szablonów.
-- **Pure.css** - Lekki szkielet CSS.
-- **Chart.js** - Wizualizacje.
-- **Custom CSS** - Dedykowane style dla nowoczesnego wyglądu.
-
-## Bezpieczeństwo
-
-- **BCrypt** - Hasła są bezpiecznie hashowane.
-- **RBAC** - Dostęp do zasobów administracyjnych ograniczony rolami (ROLE_ADMIN).
-- **Session Management** - Zarządzanie sesjami użytkowników.
-
-## Kategorie BMI (Zgodnie z WHO)
-
-- **< 18.5** - Niedowaga
-- **18.5 - 24.9** - Prawidłowa waga
-- **25.0 - 29.9** - Nadwaga
-- **≥ 30.0** - Otyłość
-
-## Planowane poprawki i rozwój
-
-+ Wdrożenie testów jednostkowych i integracyjnych.
-+ Obsługa wgrywania zdjęć profilowych.
-+ Dodanie powiadomień o przypomnieniu o ważeniu.
-+ Eksport danych do formatu CSV/PDF.
-+ Optymalizacja zapytań SQL.
-+ Poprawa obsługi błędów w warstwie UI (lepsze komunikaty walidacyjne).
-+ Refaktoryzacja brakujących fragmentów kodu opisanych jako TODO.
-
-## Licencja
-
-Projekt jest dostępny na licencji MIT.
++ Dodać testy jednostkowe.
++ Dodać tesy integracyjne.
++ Dodać testy akceptacyjne.
++ Dodać scenariusze testowe dla testera manualnego.
 
 ## Autor
 
-Tomasz Gadek
-
-
+Tomasz Gądek
