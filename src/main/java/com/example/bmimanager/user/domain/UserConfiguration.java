@@ -8,6 +8,12 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 @Configuration
 public class UserConfiguration {
 
+    public UserFacade userFacade() {
+        org.springframework.context.support.ResourceBundleMessageSource messageSource = new org.springframework.context.support.ResourceBundleMessageSource();
+        messageSource.setBasename("messages");
+        return userFacade(new InMemoryBmiUserRepository(), new BCryptPasswordEncoder(), messageSource);
+    }
+
     @Bean
     public UserFacade userFacade(BmiUserRepository bmiUserRepository,
             BCryptPasswordEncoder passwordEncoder,

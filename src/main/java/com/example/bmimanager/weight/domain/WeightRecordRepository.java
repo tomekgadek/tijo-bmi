@@ -2,14 +2,13 @@ package com.example.bmimanager.weight.domain;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
+import org.springframework.data.repository.Repository;
 
 import java.util.List;
 import java.util.Optional;
 
-@Repository
-interface WeightRecordRepository extends JpaRepository<WeightRecord, Long> {
+@org.springframework.stereotype.Repository
+interface WeightRecordRepository extends Repository<WeightRecord, Long> {
 
     List<WeightRecord> findByUserIdOrderByRecordDateAsc(Long userId);
 
@@ -17,4 +16,9 @@ interface WeightRecordRepository extends JpaRepository<WeightRecord, Long> {
 
     Optional<WeightRecord> findTopByUserIdOrderByRecordDateDesc(Long userId);
 
+    WeightRecord save(WeightRecord record);
+
+    Optional<WeightRecord> findById(Long recordId);
+
+    void deleteById(Long recordId);
 }
